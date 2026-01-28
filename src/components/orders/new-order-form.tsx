@@ -162,7 +162,11 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
 
       const result = await createOrder(formData, user);
       if (result?.errors) {
-        // Handle errors
+        toast({
+          variant: 'destructive',
+          title: 'Falha na Validação',
+          description: result.message || 'Verifique os dados e tente novamente.'
+        });
       } else if (result?.message) {
         toast({ variant: 'destructive', title: 'Erro', description: result.message });
       } else {

@@ -40,8 +40,14 @@ const CreateOrderSchema = FormSchema.omit({ id: true, date: true });
 
 export async function createOrder(formData: FormData, user: {name: string}) {
   const rawFormData = Object.fromEntries(formData.entries());
+  const certificateFile = formData.get('certificateFile') as File | null;
+
+  const dataToValidate = {
+    ...rawFormData,
+    certificateFile: certificateFile && certificateFile.size > 0 ? certificateFile.name : undefined,
+  };
   
-  const validatedFields = CreateOrderSchema.safeParse(rawFormData);
+  const validatedFields = CreateOrderSchema.safeParse(dataToValidate);
   
   if (!validatedFields.success) {
     return {
@@ -65,6 +71,7 @@ export async function createOrder(formData: FormData, user: {name: string}) {
     
     await dbCreateOrder(orderData, user);
   } catch (error) {
+    console.error(error);
     return {
       message: 'Erro de banco de dados: Falha ao criar ordem de serviço.',
     };
