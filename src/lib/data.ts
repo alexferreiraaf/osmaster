@@ -11,7 +11,7 @@ let orders: Order[] = [
     orderNow: 'Sim',
     mobile: 'Sim',
     ifoodIntegration: 'Não',
-    dll: 'v1.2.0',
+    dll: 'a77df4ad504463ac353db846a1c84e611735a8d0f7560dd1d80dc25019565c26cee83258cf953deb0c5c09d8f6911cb08cada210faf5bc57ed5b16908227e8da',
     remoteCode: '456 123 789',
     assignedTo: 'Carlos Alberto',
     service: 'Manutenção de Ar Condicionado',
