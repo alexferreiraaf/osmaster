@@ -138,7 +138,12 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
   const onSubmit = (data: FormValues) => {
     startTransition(async () => {
       const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
+      const finalData = { ...data };
+      if (finalData.assignedTo === 'none') {
+        finalData.assignedTo = '';
+      }
+
+      Object.entries(finalData).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           if (value instanceof File) {
             formData.append(key, value, value.name);
@@ -190,7 +195,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
                     <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger className="w-full"><SelectValue placeholder="Selecione..." /></SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="">Nenhum</SelectItem>
+                        <SelectItem value="none">Nenhum</SelectItem>
                         {employees.map((e) => (<SelectItem key={e} value={e}>{e}</SelectItem>))}
                     </SelectContent>
                     </Select>
