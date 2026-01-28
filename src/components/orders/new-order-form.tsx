@@ -180,6 +180,12 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
       .slice(0, 15);
   };
 
+  const dllMask = (value: string) => {
+    if (!value) return '';
+    // Allow only hex characters and limit to 128
+    return value.replace(/[^0-9a-fA-F]/g, '').slice(0, 128);
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <FormSection title="Dados do Cliente" icon="user">
@@ -271,7 +277,23 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
 
       <FormSection title="Dados Técnicos e Acesso" icon="shield">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-          <div><Label htmlFor="dll">DLL</Label><Input id="dll" {...register('dll')} /></div>
+          <div>
+            <Label htmlFor="dll">DLL</Label>
+            <Controller
+              name="dll"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="dll"
+                  onChange={(e) => {
+                    field.onChange(dllMask(e.target.value));
+                  }}
+                  value={field.value ?? ''}
+                />
+              )}
+            />
+          </div>
           <div><Label htmlFor="remoteCode">AnyDesk / TeamViewer</Label><Input id="remoteCode" {...register('remoteCode')} /></div>
           <div>
             <Label htmlFor="certificateFile">Certificado Digital (.pfx)</Label>
