@@ -165,6 +165,15 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
     });
   };
 
+  const phoneMask = (value: string) => {
+    if (!value) return '';
+    return value
+      .replace(/\D/g, '')
+      .replace(/^(\d{2})/, '($1) ')
+      .replace(/(\d)(\d{4})$/, '$1-$2')
+      .slice(0, 15);
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <FormSection title="Dados do Cliente" icon="user">
@@ -175,7 +184,24 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
             {errors.client && <p className="text-destructive text-xs mt-1">{errors.client.message}</p>}
           </div>
           <div><Label htmlFor="document">CPF/CNPJ</Label><Input id="document" {...register('document')} /></div>
-          <div><Label htmlFor="contact">Contato (Tel/E-mail)</Label><Input id="contact" {...register('contact')} /></div>
+          <div>
+            <Label htmlFor="contact">Telefone</Label>
+            <Controller
+              name="contact"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="contact"
+                  placeholder="(XX) XXXXX-XXXX"
+                  onChange={(e) => {
+                    field.onChange(phoneMask(e.target.value));
+                  }}
+                  value={field.value ?? ''}
+                />
+              )}
+            />
+          </div>
           <div>
             <Label htmlFor="city">Cidade *</Label>
             <Input id="city" {...register('city')} />
