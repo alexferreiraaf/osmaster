@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   ClipboardList,
   LogOut
@@ -16,7 +16,6 @@ import { Button } from '../ui/button';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
   const { user, logout } = useAuth();
   const pageTitle = getPageTitle(pathname);
 
@@ -24,17 +23,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
   
-  if (!user && pathname !== '/login') {
-    // router.push('/login') doesn't work well here during server rendering
-    if (typeof window !== 'undefined') {
-        router.push('/login');
-    }
+  // The redirect is handled by the AuthProvider's useEffect.
+  // We just need to prevent rendering the shell until the user is resolved or redirected.
+  if (!user) {
     return null;
   }
 
   const handleLogout = () => {
     logout();
-    router.push('/login');
   };
 
   return (
