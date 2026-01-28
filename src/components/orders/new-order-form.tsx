@@ -192,7 +192,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
                 control={control}
                 name="assignedTo"
                 render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select key={employees.join(',')} onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger className="w-full"><SelectValue placeholder="Selecione..." /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="none">Nenhum</SelectItem>
