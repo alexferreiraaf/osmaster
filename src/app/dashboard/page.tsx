@@ -31,25 +31,25 @@ export default async function DashboardPage() {
         <StatCard
           label="Total"
           value={stats.total}
-          icon={<FileText size={20} />}
+          icon="total"
           color="bg-blue-500"
         />
         <StatCard
           label="Em Andamento"
           value={stats.ongoing}
-          icon={<Clock size={20} />}
+          icon="ongoing"
           color="bg-amber-500"
         />
         <StatCard
           label="Concluídas"
           value={stats.completed}
-          icon={<CheckCircle2 size={20} />}
+          icon="completed"
           color="bg-emerald-500"
         />
         <StatCard
           label="Pendentes"
           value={stats.pending}
-          icon={<AlertCircle size={20} />}
+          icon="pending"
           color="bg-rose-500"
         />
       </div>

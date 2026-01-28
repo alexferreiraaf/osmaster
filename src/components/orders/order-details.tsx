@@ -26,40 +26,39 @@ import { updateOrderStatus } from '@/app/orders/actions';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
-
 function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
-    const isYes = value === 'Sim';
-    return (
-      <div className={cn(
-        `p-2.5 rounded-lg text-center border`, 
-        isYes 
-          ? 'bg-primary/10 border-primary/20 text-primary' 
-          : 'bg-muted border-border text-muted-foreground'
-      )}>
-        <p className="text-[10px] font-bold uppercase mb-1">{label}</p>
-        <p className="text-sm font-black">{value}</p>
-      </div>
-    );
-  }
+  const isYes = value === 'Sim';
+  return (
+    <div className={cn(
+      `p-2.5 rounded-lg text-center border`,
+      isYes
+        ? 'bg-primary/10 border-primary/20 text-primary'
+        : 'bg-muted border-border text-muted-foreground'
+    )}>
+      <p className="text-[10px] font-bold uppercase mb-1">{label}</p>
+      <p className="text-sm font-black">{value}</p>
+    </div>
+  );
+}
 
 function DetailSection({
-    title,
-    icon,
-    children,
-  }: {
-    title: string;
-    icon: React.ReactNode;
-    children: React.ReactNode;
-  }) {
-    return (
-      <div>
-        <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
-          {icon} {title}
-        </h4>
-        {children}
-      </div>
-    );
-  }
+  title,
+  icon,
+  children,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+        {icon} {title}
+      </h4>
+      {children}
+    </div>
+  );
+}
 
 export default function OrderDetails({ order, employees }: { order: Order, employees: Employee[] }) {
   const { toast } = useToast();

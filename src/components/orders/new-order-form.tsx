@@ -52,6 +52,16 @@ const FormSchema = z.object({
 
 type FormValues = z.infer<typeof FormSchema>;
 
+const FormSection = ({ title, icon, children }: { title: string, icon: React.ReactNode, children: React.ReactNode }) => (
+  <div className="space-y-4">
+    <div className="flex items-center gap-3 border-b pb-3">
+      {icon}
+      <h3 className="font-bold text-lg text-foreground">{title}</h3>
+    </div>
+    {children}
+  </div>
+);
+
 export function NewOrderForm({ employees }: { employees: Employee[] }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -139,16 +149,6 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
       }
     });
   };
-
-  const FormSection = ({ title, icon, children }: { title: string, icon: React.ReactNode, children: React.ReactNode }) => (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3 border-b pb-3">
-        {icon}
-        <h3 className="font-bold text-lg text-foreground">{title}</h3>
-      </div>
-      {children}
-    </div>
-  );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
