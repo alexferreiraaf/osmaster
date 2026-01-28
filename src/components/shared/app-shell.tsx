@@ -29,6 +29,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pageTitle = getPageTitle(pathname);
   const { user, logout } = useAuth();
 
+  const isAuthPage = pathname === '/login' || pathname === '/register';
+
+  if (isAuthPage) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-background text-foreground font-sans">
       <aside className="w-64 bg-card text-card-foreground p-4 hidden md:flex flex-col border-r">
