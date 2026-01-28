@@ -33,6 +33,13 @@ export interface Order {
   priority: Priority;
   description: string;
   checklist: ChecklistItems;
+  lastUpdatedBy?: string;
+  updatedAt?: string;
 }
 
 export type Employee = string;
+
+export type User = {
+  name: string;
+  email: string;
+};

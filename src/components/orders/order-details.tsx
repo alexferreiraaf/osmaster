@@ -13,6 +13,8 @@ import {
   Clock,
   CheckCircle,
   ListChecks,
+  UserCheck,
+  Calendar,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -28,6 +30,9 @@ import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/hooks/use-auth';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
   const isYes = value === 'Sim';
@@ -44,7 +49,7 @@ function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
   );
 }
 
-type DetailIconType = 'user' | 'monitor' | 'settings' | 'hard-drive' | 'checklist';
+type DetailIconType = 'user' | 'monitor' | 'settings' | 'hard-drive' | 'checklist' | 'history';
 
 const detailIconMap: Record<DetailIconType, React.ReactNode> = {
     user: <User size={14} />,
@@ -52,6 +57,7 @@ const detailIconMap: Record<DetailIconType, React.ReactNode> = {
     settings: <Settings size={14} />,
     'hard-drive': <HardDrive size={14} />,
     checklist: <ListChecks size={14} />,
+    history: <Clock size={14} />
 };
 
 function DetailSection({
@@ -75,16 +81,18 @@ function DetailSection({
 
 export default function OrderDetails({ order, employees }: { order: Order, employees: Employee[] }) {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isUpdating, setIsUpdating] = React.useState(false);
   const [checklist, setChecklist] = React.useState<ChecklistItems>(order.checklist);
   const [description, setDescription] = React.useState(order.description);
   const [isSavingDescription, setIsSavingDescription] = React.useState(false);
 
   const handleChecklistChange = async (item: keyof ChecklistItems, checked: boolean) => {
+    if (!user) return;
     const updatedChecklist = { ...checklist, [item]: checked };
     setChecklist(updatedChecklist);
     
-    const result = await updateOrderChecklist(order.id, updatedChecklist);
+    const result = await updateOrderChecklist(order.id, updatedChecklist, user);
     if(result.message?.includes('sucesso')) {
         toast({ title: 'Checklist Atualizado' });
     } else {
@@ -93,9 +101,9 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
   };
 
   const handleSaveDescription = async () => {
-    if (description === order.description) return;
+    if (description === order.description || !user) return;
     setIsSavingDescription(true);
-    const result = await updateOrderDescription(order.id, description);
+    const result = await updateOrderDescription(order.id, description, user);
     if(result.message?.includes('sucesso')) {
         toast({ title: 'Observações Salvas' });
     } else {
@@ -116,8 +124,9 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
 
 
   const handleUpdateStatus = async (status: 'Em Andamento' | 'Concluída') => {
+    if (!user) return;
     setIsUpdating(true);
-    const result = await updateOrderStatus(order.id, status);
+    const result = await updateOrderStatus(order.id, status, user);
     if(result.message?.includes('sucesso')) {
         toast({ title: 'Status Atualizado', description: `Ordem agora está "${status}".`});
     } else {
@@ -143,8 +152,9 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
         <header className="flex justify-between items-start border-b pb-6 mb-8">
           <div>
             <h1 className="text-3xl font-black text-foreground">{order.id}</h1>
-            <p className="text-muted-foreground font-medium">
-              Data de Abertura: {new Date(order.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
+            <p className="text-muted-foreground font-medium flex items-center gap-1.5">
+                <Calendar size={14} /> 
+                {format(new Date(order.date), "dd 'de' MMMM, yyyy", { locale: ptBR, timeZone: 'UTC' })}
             </p>
             <p className="text-primary font-bold mt-1">Status: {order.status}</p>
           </div>
@@ -246,6 +256,20 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                         </div>
                     </div>
                 </DetailSection>
+                 {order.lastUpdatedBy && order.updatedAt && (
+                    <DetailSection title="Histórico" icon="history">
+                      <div className="bg-secondary/50 p-4 rounded-xl text-sm">
+                        <div className='flex items-center gap-1.5'>
+                          <UserCheck size={14} className="text-muted-foreground" />
+                          <p>Última alteração por: <span className='font-semibold'>{order.lastUpdatedBy}</span></p>
+                        </div>
+                        <div className='flex items-center gap-1.5 mt-1'>
+                          <Calendar size={14} className="text-muted-foreground" />
+                          <p>Em: {format(new Date(order.updatedAt), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</p>
+                        </div>
+                      </div>
+                    </DetailSection>
+                )}
             </div>
         </div>
         

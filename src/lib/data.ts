@@ -28,6 +28,8 @@ let orders: Order[] = [
       imagens: false,
       fiscal: true,
     },
+    lastUpdatedBy: 'Admin',
+    updatedAt: '2024-05-16T10:00:00Z'
   },
   {
     id: 'OS-2024-002',
@@ -57,6 +59,8 @@ let orders: Order[] = [
       imagens: true,
       fiscal: true,
     },
+    lastUpdatedBy: 'Carlos Alberto',
+    updatedAt: '2024-05-21T14:30:00Z'
   },
   {
     id: 'OS-2024-003',
@@ -128,36 +132,43 @@ export async function createOrder(orderData: Omit<Order, 'id' | 'date' | 'status
       imagens: false,
       fiscal: false,
     },
+    updatedAt: new Date().toISOString(),
   };
   orders = [newOrder, ...orders];
   return newOrder;
 }
 
-export async function updateOrderStatus(id: string, status: OrderStatus): Promise<Order | undefined> {
+export async function updateOrderStatus(id: string, status: OrderStatus, updatedBy: string): Promise<Order | undefined> {
   await delay(300);
   const orderIndex = orders.findIndex(o => o.id === id);
   if (orderIndex > -1) {
     orders[orderIndex].status = status;
+    orders[orderIndex].lastUpdatedBy = updatedBy;
+    orders[orderIndex].updatedAt = new Date().toISOString();
     return orders[orderIndex];
   }
   return undefined;
 }
 
-export async function updateOrderChecklist(id: string, checklist: ChecklistItems): Promise<Order | undefined> {
+export async function updateOrderChecklist(id: string, checklist: ChecklistItems, updatedBy: string): Promise<Order | undefined> {
   await delay(300);
   const orderIndex = orders.findIndex(o => o.id === id);
   if (orderIndex > -1) {
     orders[orderIndex].checklist = checklist;
+    orders[orderIndex].lastUpdatedBy = updatedBy;
+    orders[orderIndex].updatedAt = new Date().toISOString();
     return orders[orderIndex];
   }
   return undefined;
 }
 
-export async function updateOrderDescription(id: string, description: string): Promise<Order | undefined> {
+export async function updateOrderDescription(id: string, description: string, updatedBy: string): Promise<Order | undefined> {
     await delay(300);
     const orderIndex = orders.findIndex(o => o.id === id);
     if (orderIndex > -1) {
       orders[orderIndex].description = description;
+      orders[orderIndex].lastUpdatedBy = updatedBy;
+      orders[orderIndex].updatedAt = new Date().toISOString();
       return orders[orderIndex];
     }
     return undefined;

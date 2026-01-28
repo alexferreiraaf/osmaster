@@ -2,18 +2,40 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   ClipboardList,
+  LogOut
 } from 'lucide-react';
 
 import { SearchInput } from './search-input';
 import { SidebarItem } from './sidebar-item';
 import { getPageTitle } from '@/lib/utils';
+import { useAuth } from '@/hooks/use-auth';
+import { Button } from '../ui/button';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
   const pageTitle = getPageTitle(pathname);
+
+  if (pathname === '/login') {
+    return <>{children}</>;
+  }
+  
+  if (!user && pathname !== '/login') {
+    // router.push('/login') doesn't work well here during server rendering
+    if (typeof window !== 'undefined') {
+        router.push('/login');
+    }
+    return null;
+  }
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   return (
     <div className="flex h-screen bg-background text-foreground font-sans">
@@ -33,8 +55,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <SidebarItem icon="new" label="Nova OS" href="/orders/new" />
         </nav>
         
-        <div>
+        <div className="space-y-2">
           <SidebarItem icon="settings" label="Configurações" href="/settings" />
+           <Button variant="ghost" className="w-full justify-start gap-3 p-3 h-auto text-base text-slate-500 hover:bg-destructive/10 hover:text-destructive" onClick={handleLogout}>
+              <LogOut size={20} />
+              <span>Sair</span>
+            </Button>
         </div>
       </aside>
 
@@ -44,8 +70,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <h2 className="text-xl font-semibold text-foreground capitalize">
               {pageTitle}
             </h2>
-            <div className="hidden sm:block">
-              <SearchInput />
+            <div className='flex items-center gap-4'>
+                <div className="hidden sm:block">
+                    <SearchInput />
+                </div>
+                 <div className="text-right">
+                    <p className="text-sm font-semibold">{user?.name}</p>
+                    <p className="text-xs text-muted-foreground">{user?.email}</p>
+                </div>
             </div>
           </div>
         </header>

@@ -52,8 +52,9 @@ export async function createOrder(formData: FormData) {
 
   try {
     const data = validatedFields.data;
-    // Type casting to match the expected Order structure.
-    // In a real app, you might need more complex transformations.
+    // This is a mock implementation. In a real app, you'd get the user from the session.
+    const user = { name: 'Admin' };
+    
     const orderData = {
         ...data,
         assignedTo: data.assignedTo === 'none' ? '' : data.assignedTo ?? '',
@@ -62,6 +63,7 @@ export async function createOrder(formData: FormData) {
         contact: data.contact ?? '',
         dll: data.dll ?? '',
         remoteCode: data.remoteCode ?? '',
+        lastUpdatedBy: user.name,
     } as Omit<Order, 'id'| 'date' | 'status' | 'checklist'>;
     
     await dbCreateOrder(orderData);
@@ -76,9 +78,9 @@ export async function createOrder(formData: FormData) {
   redirect('/orders');
 }
 
-export async function updateOrderStatus(id: string, status: OrderStatus) {
+export async function updateOrderStatus(id: string, status: OrderStatus, user: { name: string }) {
   try {
-    await dbUpdateOrderStatus(id, status);
+    await dbUpdateOrderStatus(id, status, user.name);
     revalidatePath(`/orders/${id}`);
     revalidatePath('/orders');
     revalidatePath('/dashboard');
@@ -88,9 +90,9 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
   }
 }
 
-export async function updateOrderChecklist(id: string, checklist: ChecklistItems) {
+export async function updateOrderChecklist(id: string, checklist: ChecklistItems, user: { name: string }) {
   try {
-    await dbUpdateOrderChecklist(id, checklist);
+    await dbUpdateOrderChecklist(id, checklist, user.name);
     revalidatePath(`/orders/${id}`);
     return { message: 'Checklist atualizado com sucesso.' };
   } catch (error) {
@@ -100,14 +102,14 @@ export async function updateOrderChecklist(id: string, checklist: ChecklistItems
 
 const DescriptionSchema = z.string().optional();
 
-export async function updateOrderDescription(id: string, description: string) {
+export async function updateOrderDescription(id: string, description: string, user: { name: string }) {
   const validatedDescription = DescriptionSchema.safeParse(description);
   if (!validatedDescription.success) {
     return { message: 'Observação inválida.' };
   }
 
   try {
-    await dbUpdateOrderDescription(id, validatedDescription.data || '');
+    await dbUpdateOrderDescription(id, validatedDescription.data || '', user.name);
     revalidatePath(`/orders/${id}`);
     return { message: 'Observações atualizadas com sucesso.' };
   } catch (error) {
