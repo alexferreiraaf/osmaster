@@ -17,11 +17,11 @@ import { SearchInput } from './search-input';
 
 function SidebarItem({
   href,
-  icon: Icon,
+  icon,
   label,
 }: {
   href: string;
-  icon: React.ElementType;
+  icon: React.ReactNode;
   label: string;
 }) {
   const pathname = usePathname();
@@ -37,7 +37,7 @@ function SidebarItem({
       )}
     >
       <Link href={href}>
-        <Icon size={20} />
+        {icon}
         <span>{label}</span>
       </Link>
     </Button>
@@ -69,9 +69,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <nav className="space-y-2 flex-1">
-          <SidebarItem icon={LayoutDashboard} label="Painel" href="/dashboard" />
-          <SidebarItem icon={FileText} label="Ordens de Serviço" href="/orders" />
-          <SidebarItem icon={Plus} label="Nova OS" href="/orders/new" />
+          <SidebarItem icon={<LayoutDashboard size={20} />} label="Painel" href="/dashboard" />
+          <SidebarItem icon={<FileText size={20} />} label="Ordens de Serviço" href="/orders" />
+          <SidebarItem icon={<Plus size={20} />} label="Nova OS" href="/orders/new" />
         </nav>
       </aside>
 

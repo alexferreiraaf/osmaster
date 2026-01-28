@@ -1,3 +1,5 @@
+'use client';
+
 import type { OrderStatus } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';

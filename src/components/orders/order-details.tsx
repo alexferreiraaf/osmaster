@@ -21,7 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import type { Order } from '@/lib/types';
+import type { Order, Employee } from '@/lib/types';
 import { updateOrderStatus } from '@/app/orders/actions';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -44,24 +44,24 @@ function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
 
 function DetailSection({
     title,
-    icon: Icon,
+    icon,
     children,
   }: {
     title: string;
-    icon: React.ElementType;
+    icon: React.ReactNode;
     children: React.ReactNode;
   }) {
     return (
       <div>
         <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
-          <Icon size={14} /> {title}
+          {icon} {title}
         </h4>
         {children}
       </div>
     );
   }
 
-export default function OrderDetails({ order }: { order: Order }) {
+export default function OrderDetails({ order, employees }: { order: Order, employees: Employee[] }) {
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = React.useState(false);
 
@@ -108,7 +108,7 @@ export default function OrderDetails({ order }: { order: Order }) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
             <div className="space-y-6">
-                <DetailSection title="Dados do Cliente" icon={User}>
+                <DetailSection title="Dados do Cliente" icon={<User size={14} />}>
                     <div className="bg-secondary/50 p-4 rounded-xl space-y-2">
                         <p className="text-lg font-bold">{order.client}</p>
                         <p className="text-sm text-foreground/80"><span className="font-semibold">Doc:</span> {order.document || 'N/A'}</p>
@@ -117,7 +117,7 @@ export default function OrderDetails({ order }: { order: Order }) {
                     </div>
                 </DetailSection>
 
-                <DetailSection title="Acesso Remoto e Software" icon={Monitor}>
+                <DetailSection title="Acesso Remoto e Software" icon={<Monitor size={14} />}>
                     <div className="bg-secondary/50 p-4 rounded-xl grid grid-cols-2 gap-4">
                         <div>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase">AnyDesk/TV</p>
@@ -136,7 +136,7 @@ export default function OrderDetails({ order }: { order: Order }) {
             </div>
             
             <div className="space-y-6">
-                 <DetailSection title="Status de Módulos" icon={Settings}>
+                 <DetailSection title="Status de Módulos" icon={<Settings size={14} />}>
                       <div className="grid grid-cols-3 gap-2">
                         <InfoBadge label="Pedido Agora" value={order.orderNow} />
                         <InfoBadge label="Mobile" value={order.mobile} />
@@ -151,7 +151,7 @@ export default function OrderDetails({ order }: { order: Order }) {
                       )}
                 </DetailSection>
 
-                <DetailSection title="Detalhes do Serviço" icon={HardDrive}>
+                <DetailSection title="Detalhes do Serviço" icon={<HardDrive size={14} />}>
                       <div className="border-l-4 border-primary pl-4 py-1">
                         <p className="font-bold text-lg text-foreground">{order.service}</p>
                         <p className="text-xs font-bold text-muted-foreground uppercase mt-3">Prioridade: {order.priority}</p>

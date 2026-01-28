@@ -140,10 +140,10 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
     });
   };
 
-  const FormSection = ({ title, icon: Icon, children }: { title: string, icon: React.ElementType, children: React.ReactNode }) => (
+  const FormSection = ({ title, icon, children }: { title: string, icon: React.ReactNode, children: React.ReactNode }) => (
     <div className="space-y-4">
       <div className="flex items-center gap-3 border-b pb-3">
-        <Icon size={20} className="text-primary" />
+        {icon}
         <h3 className="font-bold text-lg text-foreground">{title}</h3>
       </div>
       {children}
@@ -152,7 +152,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      <FormSection title="Dados do Cliente" icon={User}>
+      <FormSection title="Dados do Cliente" icon={<User size={20} className="text-primary" />}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <Label htmlFor="client">Nome do Cliente *</Label>
@@ -195,7 +195,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
         </div>
       </FormSection>
 
-      <FormSection title="Configurações e Integrações" icon={Settings}>
+      <FormSection title="Configurações e Integrações" icon={<Settings size={20} className="text-primary" />}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {['orderNow', 'mobile', 'ifoodIntegration'].map((id) => (
             <div key={id}>
@@ -221,7 +221,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
         )}
       </FormSection>
 
-      <FormSection title="Dados Técnicos e Acesso" icon={Shield}>
+      <FormSection title="Dados Técnicos e Acesso" icon={<Shield size={20} className="text-primary" />}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
           <div><Label htmlFor="dll">DLL</Label><Input id="dll" {...register('dll')} /></div>
           <div><Label htmlFor="remoteCode">AnyDesk / TeamViewer</Label><Input id="remoteCode" {...register('remoteCode')} /></div>
@@ -232,7 +232,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
         </div>
       </FormSection>
 
-      <FormSection title="Sobre o Serviço" icon={HardDrive}>
+      <FormSection title="Sobre o Serviço" icon={<HardDrive size={20} className="text-primary" />}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="service">Título do Serviço *</Label>
