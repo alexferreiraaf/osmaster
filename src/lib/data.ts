@@ -153,6 +153,16 @@ export async function updateOrderChecklist(id: string, checklist: ChecklistItems
   return undefined;
 }
 
+export async function updateOrderDescription(id: string, description: string): Promise<Order | undefined> {
+    await delay(300);
+    const orderIndex = orders.findIndex(o => o.id === id);
+    if (orderIndex > -1) {
+      orders[orderIndex].description = description;
+      return orders[orderIndex];
+    }
+    return undefined;
+}
+
 export async function deleteOrder(id: string): Promise<{ success: boolean }> {
   await delay(300);
   const initialLength = orders.length;

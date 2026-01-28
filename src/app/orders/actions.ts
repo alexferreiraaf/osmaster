@@ -8,6 +8,7 @@ import {
   deleteOrder as dbDeleteOrder,
   updateOrderStatus as dbUpdateOrderStatus,
   updateOrderChecklist as dbUpdateOrderChecklist,
+  updateOrderDescription as dbUpdateOrderDescription,
 } from '@/lib/data';
 import type { Order, OrderStatus, ChecklistItems } from '@/lib/types';
 import { suggestTechnicianForOrder, type SuggestTechnicianForOrderInput } from '@/ai/flows/suggest-technician-for-order';
@@ -94,6 +95,23 @@ export async function updateOrderChecklist(id: string, checklist: ChecklistItems
     return { message: 'Checklist atualizado com sucesso.' };
   } catch (error) {
     return { message: 'Erro ao atualizar checklist.' };
+  }
+}
+
+const DescriptionSchema = z.string().optional();
+
+export async function updateOrderDescription(id: string, description: string) {
+  const validatedDescription = DescriptionSchema.safeParse(description);
+  if (!validatedDescription.success) {
+    return { message: 'Observação inválida.' };
+  }
+
+  try {
+    await dbUpdateOrderDescription(id, validatedDescription.data || '');
+    revalidatePath(`/orders/${id}`);
+    return { message: 'Observações atualizadas com sucesso.' };
+  } catch (error) {
+    return { message: 'Erro ao atualizar observações.' };
   }
 }
 

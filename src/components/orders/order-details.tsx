@@ -22,11 +22,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import type { Order, Employee, ChecklistItems } from '@/lib/types';
-import { updateOrderStatus, updateOrderChecklist } from '@/app/orders/actions';
+import { updateOrderStatus, updateOrderChecklist, updateOrderDescription } from '@/app/orders/actions';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
   const isYes = value === 'Sim';
@@ -76,6 +77,8 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = React.useState(false);
   const [checklist, setChecklist] = React.useState<ChecklistItems>(order.checklist);
+  const [description, setDescription] = React.useState(order.description);
+  const [isSavingDescription, setIsSavingDescription] = React.useState(false);
 
   const handleChecklistChange = async (item: keyof ChecklistItems, checked: boolean) => {
     const updatedChecklist = { ...checklist, [item]: checked };
@@ -87,6 +90,18 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
     } else {
         toast({ variant: 'destructive', title: 'Erro', description: result.message });
     }
+  };
+
+  const handleSaveDescription = async () => {
+    if (description === order.description) return;
+    setIsSavingDescription(true);
+    const result = await updateOrderDescription(order.id, description);
+    if(result.message?.includes('sucesso')) {
+        toast({ title: 'Observações Salvas' });
+    } else {
+        toast({ variant: 'destructive', title: 'Erro', description: result.message });
+    }
+    setIsSavingDescription(false);
   };
 
   const checklistLabels: Record<keyof ChecklistItems, string> = {
@@ -204,12 +219,32 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                 </DetailSection>
 
                 <DetailSection title="Detalhes do Serviço" icon="hard-drive">
-                      <div className="border-l-4 border-primary pl-4 py-1">
-                        <p className="font-bold text-lg text-foreground">{order.service}</p>
-                        <p className="text-xs font-bold text-muted-foreground uppercase mt-3">Prioridade: {order.priority}</p>
-                        <p className="text-xs font-bold text-muted-foreground uppercase mt-3">Observações:</p>
-                        <p className="text-sm text-foreground/80 mt-1 italic">"{order.description || 'Sem observações adicionais.'}"</p>
-                      </div>
+                    <div className="border-l-4 border-primary pl-4 py-1 space-y-3">
+                        <div>
+                            <p className="font-bold text-lg text-foreground">{order.service}</p>
+                            <p className="text-xs font-bold text-muted-foreground uppercase mt-1">Prioridade: {order.priority}</p>
+                        </div>
+                        <div>
+                            <Label htmlFor="description" className="text-xs font-bold text-muted-foreground uppercase">Observações</Label>
+                            <Textarea
+                                id="description"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                rows={4}
+                                className="mt-1"
+                                placeholder="Nenhuma observação."
+                            />
+                            <Button 
+                                onClick={handleSaveDescription} 
+                                disabled={isSavingDescription || description === order.description} 
+                                size="sm" 
+                                className="mt-2"
+                            >
+                                Salvar Observações
+                                {isSavingDescription && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground ml-2"></div>}
+                            </Button>
+                        </div>
+                    </div>
                 </DetailSection>
             </div>
         </div>
