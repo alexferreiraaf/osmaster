@@ -1,6 +1,16 @@
 export type OrderStatus = 'Pendente' | 'Em Andamento' | 'Concluída';
 export type Priority = 'Baixa' | 'Média' | 'Alta' | 'Urgente';
 
+export type ChecklistItems = {
+  importacaoProdutos: boolean;
+  adicionaisOpcionais: boolean;
+  codigoPDV: boolean;
+  preco: boolean;
+  bairros: boolean;
+  imagens: boolean;
+  fiscal: boolean;
+};
+
 export interface Order {
   id: string;
   client: string;
@@ -22,6 +32,7 @@ export interface Order {
   date: string;
   priority: Priority;
   description: string;
+  checklist: ChecklistItems;
 }
 
 export type Employee = string;

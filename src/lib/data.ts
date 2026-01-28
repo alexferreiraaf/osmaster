@@ -1,4 +1,4 @@
-import type { Order, Employee, OrderStatus } from './types';
+import type { Order, Employee, OrderStatus, ChecklistItems } from './types';
 
 let orders: Order[] = [
   {
@@ -19,6 +19,15 @@ let orders: Order[] = [
     date: '2024-05-15',
     priority: 'Alta',
     description: 'Limpeza geral e troca de filtro do condensador.',
+    checklist: {
+      importacaoProdutos: true,
+      adicionaisOpcionais: true,
+      codigoPDV: false,
+      preco: true,
+      bairros: false,
+      imagens: false,
+      fiscal: true,
+    },
   },
   {
     id: 'OS-2024-002',
@@ -39,6 +48,15 @@ let orders: Order[] = [
     date: '2024-05-20',
     priority: 'Média',
     description: 'Instalar e configurar emissor de notas fiscais.',
+    checklist: {
+      importacaoProdutos: true,
+      adicionaisOpcionais: false,
+      codigoPDV: true,
+      preco: true,
+      bairros: false,
+      imagens: true,
+      fiscal: true,
+    },
   },
   {
     id: 'OS-2024-003',
@@ -58,6 +76,15 @@ let orders: Order[] = [
     date: '2024-05-22',
     priority: 'Baixa',
     description: 'Configurar novo roteador e pontos de acesso.',
+    checklist: {
+      importacaoProdutos: false,
+      adicionaisOpcionais: false,
+      codigoPDV: false,
+      preco: false,
+      bairros: false,
+      imagens: false,
+      fiscal: false,
+    },
   },
 ];
 
@@ -85,13 +112,22 @@ export async function getOrderById(id: string): Promise<Order | undefined> {
   return orders.find(o => o.id === id);
 }
 
-export async function createOrder(orderData: Omit<Order, 'id' | 'date' | 'status'>): Promise<Order> {
+export async function createOrder(orderData: Omit<Order, 'id' | 'date' | 'status' | 'checklist'>): Promise<Order> {
   await delay(500);
   const newOrder: Order = {
     ...orderData,
     id: `OS-${new Date().getFullYear()}-${String(Math.floor(1000 + Math.random() * 9000)).padStart(4, '0')}`,
     date: new Date().toISOString().split('T')[0],
     status: 'Pendente',
+    checklist: {
+      importacaoProdutos: false,
+      adicionaisOpcionais: false,
+      codigoPDV: false,
+      preco: false,
+      bairros: false,
+      imagens: false,
+      fiscal: false,
+    },
   };
   orders = [newOrder, ...orders];
   return newOrder;
@@ -102,6 +138,16 @@ export async function updateOrderStatus(id: string, status: OrderStatus): Promis
   const orderIndex = orders.findIndex(o => o.id === id);
   if (orderIndex > -1) {
     orders[orderIndex].status = status;
+    return orders[orderIndex];
+  }
+  return undefined;
+}
+
+export async function updateOrderChecklist(id: string, checklist: ChecklistItems): Promise<Order | undefined> {
+  await delay(300);
+  const orderIndex = orders.findIndex(o => o.id === id);
+  if (orderIndex > -1) {
+    orders[orderIndex].checklist = checklist;
     return orders[orderIndex];
   }
   return undefined;

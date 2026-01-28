@@ -7,8 +7,9 @@ import {
   createOrder as dbCreateOrder,
   deleteOrder as dbDeleteOrder,
   updateOrderStatus as dbUpdateOrderStatus,
+  updateOrderChecklist as dbUpdateOrderChecklist,
 } from '@/lib/data';
-import type { Order, OrderStatus } from '@/lib/types';
+import type { Order, OrderStatus, ChecklistItems } from '@/lib/types';
 import { suggestTechnicianForOrder, type SuggestTechnicianForOrderInput } from '@/ai/flows/suggest-technician-for-order';
 
 
@@ -54,13 +55,13 @@ export async function createOrder(formData: FormData) {
     // In a real app, you might need more complex transformations.
     const orderData = {
         ...data,
-        assignedTo: data.assignedTo ?? '',
+        assignedTo: data.assignedTo === 'none' ? '' : data.assignedTo ?? '',
         description: data.description ?? '',
         document: data.document ?? '',
         contact: data.contact ?? '',
         dll: data.dll ?? '',
         remoteCode: data.remoteCode ?? '',
-    } as Omit<Order, 'id'| 'date' | 'status'>;
+    } as Omit<Order, 'id'| 'date' | 'status' | 'checklist'>;
     
     await dbCreateOrder(orderData);
   } catch (error) {
@@ -83,6 +84,16 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
     return { message: 'Status atualizado com sucesso.' };
   } catch (error) {
     return { message: 'Erro ao atualizar status.' };
+  }
+}
+
+export async function updateOrderChecklist(id: string, checklist: ChecklistItems) {
+  try {
+    await dbUpdateOrderChecklist(id, checklist);
+    revalidatePath(`/orders/${id}`);
+    return { message: 'Checklist atualizado com sucesso.' };
+  } catch (error) {
+    return { message: 'Erro ao atualizar checklist.' };
   }
 }
 

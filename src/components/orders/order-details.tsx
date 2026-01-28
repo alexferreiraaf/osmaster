@@ -12,6 +12,7 @@ import {
   HardDrive,
   Clock,
   CheckCircle,
+  ListChecks,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,10 +21,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import type { Order, Employee } from '@/lib/types';
-import { updateOrderStatus } from '@/app/orders/actions';
+import type { Order, Employee, ChecklistItems } from '@/lib/types';
+import { updateOrderStatus, updateOrderChecklist } from '@/app/orders/actions';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
   const isYes = value === 'Sim';
@@ -40,13 +43,14 @@ function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
   );
 }
 
-type DetailIconType = 'user' | 'monitor' | 'settings' | 'hard-drive';
+type DetailIconType = 'user' | 'monitor' | 'settings' | 'hard-drive' | 'checklist';
 
 const detailIconMap: Record<DetailIconType, React.ReactNode> = {
     user: <User size={14} />,
     monitor: <Monitor size={14} />,
     settings: <Settings size={14} />,
     'hard-drive': <HardDrive size={14} />,
+    checklist: <ListChecks size={14} />,
 };
 
 function DetailSection({
@@ -71,6 +75,30 @@ function DetailSection({
 export default function OrderDetails({ order, employees }: { order: Order, employees: Employee[] }) {
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = React.useState(false);
+  const [checklist, setChecklist] = React.useState<ChecklistItems>(order.checklist);
+
+  const handleChecklistChange = async (item: keyof ChecklistItems, checked: boolean) => {
+    const updatedChecklist = { ...checklist, [item]: checked };
+    setChecklist(updatedChecklist);
+    
+    const result = await updateOrderChecklist(order.id, updatedChecklist);
+    if(result.message?.includes('sucesso')) {
+        toast({ title: 'Checklist Atualizado' });
+    } else {
+        toast({ variant: 'destructive', title: 'Erro', description: result.message });
+    }
+  };
+
+  const checklistLabels: Record<keyof ChecklistItems, string> = {
+    importacaoProdutos: 'Importação dos Produtos',
+    adicionaisOpcionais: 'Adicionais/Opcionais',
+    codigoPDV: 'Código PDV',
+    preco: 'Preço',
+    bairros: 'Bairros',
+    imagens: 'Imagens',
+    fiscal: 'Fiscal',
+  };
+
 
   const handleUpdateStatus = async (status: 'Em Andamento' | 'Concluída') => {
     setIsUpdating(true);
@@ -138,6 +166,23 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                             <p className="text-[10px] font-bold text-muted-foreground uppercase">Certificado Digital</p>
                             <p className="text-sm font-bold">{order.certificateFile || 'Nenhum arquivo enviado'}</p>
                         </div>
+                    </div>
+                </DetailSection>
+
+                 <DetailSection title="Checklist de Implantação" icon="checklist">
+                    <div className="bg-secondary/50 p-4 rounded-xl space-y-3">
+                        {(Object.keys(checklist) as Array<keyof ChecklistItems>).map((key) => (
+                            <div key={key} className="flex items-center space-x-2">
+                                <Checkbox
+                                id={key}
+                                checked={checklist[key]}
+                                onCheckedChange={(checked) => handleChecklistChange(key, !!checked)}
+                                />
+                                <Label htmlFor={key} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                {checklistLabels[key]}
+                                </Label>
+                            </div>
+                        ))}
                     </div>
                 </DetailSection>
             </div>
