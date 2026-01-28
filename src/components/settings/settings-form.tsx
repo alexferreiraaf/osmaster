@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Trash2, UserPlus, Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -31,6 +32,7 @@ type FormValues = z.infer<typeof FormSchema>;
 
 export function SettingsForm({ employees }: { employees: Employee[] }) {
   const { toast } = useToast();
+  const router = useRouter();
   const [isPending, startTransition] = React.useTransition();
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -50,6 +52,7 @@ export function SettingsForm({ employees }: { employees: Employee[] }) {
       } else if (result.success) {
         toast({ title: 'Sucesso!', description: result.message });
         form.reset();
+        router.refresh();
       } else {
         toast({ variant: 'destructive', title: 'Erro', description: result.message });
       }
@@ -61,6 +64,7 @@ export function SettingsForm({ employees }: { employees: Employee[] }) {
       const result = await deleteEmployeeAction(name);
       if (result.success) {
         toast({ title: 'Sucesso!', description: result.message });
+        router.refresh();
       } else {
         toast({ variant: 'destructive', title: 'Erro', description: result.message });
       }
