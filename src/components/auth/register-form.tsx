@@ -3,6 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import Link from 'next/link';
 import {
   Card,
   CardHeader,
@@ -18,38 +19,41 @@ import { useAuth } from './auth-provider';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { ClipboardList } from 'lucide-react';
-import Link from 'next/link';
-
+import { useRouter } from 'next/navigation';
 
 const FormSchema = z.object({
+    name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres.'),
     email: z.string().email('E-mail inválido.'),
-    password: z.string().min(1, 'Senha é obrigatória.'),
+    password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres.'),
 });
 
 type FormValues = z.infer<typeof FormSchema>;
 
-export function LoginForm() {
-  const { login } = useAuth();
+export function RegisterForm() {
+  const { register: registerUser } = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    }
   });
 
   const onSubmit = async (data: FormValues) => {
     setLoading(true);
-    const result = await login(data);
+    const result = await registerUser(data);
     if (!result.success) {
       toast({
         variant: 'destructive',
-        title: 'Falha no login',
+        title: 'Falha no cadastro',
         description: result.message,
       });
       setLoading(false);
+    } else {
+        toast({
+            title: 'Cadastro realizado com sucesso!',
+            description: 'Você será redirecionado para o painel.',
+        });
+        // router.push('/dashboard'); The provider will redirect
     }
   };
 
@@ -66,12 +70,23 @@ export function LoginForm() {
                     OS Master
                 </h1>
             </div>
-            <CardTitle>Bem-vindo de volta!</CardTitle>
+            <CardTitle>Criar sua conta</CardTitle>
             <CardDescription>
-              Faça login para gerenciar as ordens de serviço.
+              Preencha os campos abaixo para se cadastrar.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nome Completo</Label>
+              <Input
+                id="name"
+                placeholder="Seu nome"
+                {...form.register('name')}
+              />
+              {form.formState.errors.name && (
+                <p className="text-sm text-destructive">{form.formState.errors.name.message}</p>
+              )}
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">E-mail</Label>
               <Input
@@ -96,19 +111,17 @@ export function LoginForm() {
               )}
             </div>
           </CardContent>
-          <CardFooter>
-            <div className="w-full">
-                <Button type="submit" className="w-full" disabled={loading}>
-                    {loading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>}
-                    Entrar
-                </Button>
-                <p className="mt-4 text-center text-sm text-muted-foreground">
-                    Não tem uma conta?{' '}
-                    <Link href="/register" className="text-primary hover:underline">
-                        Cadastre-se
-                    </Link>
-                </p>
-            </div>
+          <CardFooter className="flex flex-col gap-4">
+            <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>}
+                Cadastrar
+            </Button>
+            <p className="text-sm text-muted-foreground">
+                Já tem uma conta?{' '}
+                <Link href="/login" className="text-primary hover:underline">
+                    Faça login
+                </Link>
+            </p>
           </CardFooter>
         </Card>
       </form>

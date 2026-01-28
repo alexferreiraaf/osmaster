@@ -4,21 +4,25 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import type { User } from '@/lib/types';
 import { Spinner } from '@/components/shared/spinner';
+import { auth } from '@/firebase'; // Import real auth instance
+import { 
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut,
+    updateProfile,
+    type User as FirebaseUser
+} from 'firebase/auth';
 
 type AuthContextType = {
   user: User | null;
   login: (credentials: any) => Promise<any>;
+  register: (credentials: any) => Promise<any>;
   logout: () => void;
   loading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Mock authentication
-const MOCK_USERS: Record<string, User & { password: string }> = {
-    'tecnico@email.com': { name: 'Técnico Fulano', email: 'tecnico@email.com', password: 'password' },
-    'admin@email.com': { name: 'Admin', email: 'admin@email.com', password: 'admin' },
-};
 
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -28,49 +32,67 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const checkUser = () => {
-      try {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+        if (firebaseUser) {
+            setUser({
+                name: firebaseUser.displayName || 'Usuário',
+                email: firebaseUser.email || '',
+            });
+        } else {
+            setUser(null);
         }
-      } catch (e) {
-        console.error("Failed to parse user from localStorage", e);
-      } finally {
         setLoading(false);
-      }
-    };
-    checkUser();
+    });
+
+    return () => unsubscribe();
   }, []);
   
   useEffect(() => {
-    if (!loading && !user && pathname !== '/login') {
+    if (!loading && !user && pathname !== '/login' && pathname !== '/register') {
       router.push('/login');
     }
   }, [user, loading, pathname, router]);
 
   const login = async ({ email, password }: any) => {
     setLoading(true);
-    const foundUser = MOCK_USERS[email];
-    if (foundUser && foundUser.password === password) {
-      const userToStore = { name: foundUser.name, email: foundUser.email };
-      localStorage.setItem('user', JSON.stringify(userToStore));
-      setUser(userToStore);
-      router.push('/dashboard');
-      return { success: true };
-    } else {
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        router.push('/dashboard');
+        return { success: true };
+    } catch (error: any) {
         setLoading(false);
-        return { success: false, message: 'Credenciais inválidas.' };
+        return { success: false, message: 'Credenciais inválidas ou erro no login.' };
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('user');
+  const register = async ({ name, email, password }: any) => {
+    setLoading(true);
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(userCredential.user, { displayName: name });
+        
+        // Manually setting user here to update UI immediately
+        setUser({ name: name, email: email });
+        
+        router.push('/dashboard');
+        return { success: true };
+    } catch (error: any) {
+        setLoading(false);
+        let message = 'Falha ao criar conta. Tente novamente.';
+        if (error.code === 'auth/email-already-in-use') {
+            message = 'Este e-mail já está em uso.';
+        }
+        return { success: false, message };
+    }
+  };
+
+  const logout = async () => {
+    await signOut(auth);
     setUser(null);
     router.push('/login');
   };
 
-  if (loading || (!user && pathname !== '/login')) {
+  if (loading || (!user && pathname !== '/login' && pathname !== '/register')) {
     return (
         <div className="h-screen w-full flex items-center justify-center">
             <Spinner />
@@ -79,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
