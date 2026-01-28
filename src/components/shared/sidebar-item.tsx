@@ -3,17 +3,18 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FileText, Plus } from 'lucide-react';
+import { LayoutDashboard, FileText, Plus, Settings } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
-type IconType = 'dashboard' | 'orders' | 'new';
+type IconType = 'dashboard' | 'orders' | 'new' | 'settings';
 
 const iconMap: Record<IconType, React.ReactNode> = {
   dashboard: <LayoutDashboard size={20} />,
   orders: <FileText size={20} />,
   new: <Plus size={20} />,
+  settings: <Settings size={20} />,
 };
 
 export function SidebarItem({
@@ -26,7 +27,14 @@ export function SidebarItem({
   label: string;
 }) {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  let isActive = false;
+
+  if (href === '/orders') {
+    isActive = pathname.startsWith('/orders') && !pathname.startsWith('/orders/new');
+  } else {
+    isActive = pathname.startsWith(href);
+  }
+
 
   return (
     <Button

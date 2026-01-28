@@ -61,7 +61,7 @@ let orders: Order[] = [
   },
 ];
 
-const employees: Employee[] = ['Carlos Alberto', 'Mariana Souza', 'Ricardo Lima', 'Fernanda Oliveira'];
+let employees: Employee[] = ['Carlos Alberto', 'Mariana Souza', 'Ricardo Lima', 'Fernanda Oliveira'];
 
 // Simulate API latency
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
@@ -117,6 +117,28 @@ export async function deleteOrder(id: string): Promise<{ success: boolean }> {
 export async function getEmployees(): Promise<Employee[]> {
   await delay(50);
   return employees;
+}
+
+export async function addEmployee(name: Employee): Promise<Employee> {
+    await delay(200);
+    if (employees.find(e => e.toLowerCase() === name.toLowerCase())) {
+        throw new Error('Técnico já existe.');
+    }
+    employees.push(name);
+    return name;
+}
+
+export async function deleteEmployee(name: Employee): Promise<{ success: boolean }> {
+    await delay(200);
+    const initialLength = employees.length;
+    employees = employees.filter(e => e !== name);
+    // Unassign from any orders
+    orders.forEach(o => {
+        if (o.assignedTo === name) {
+            o.assignedTo = '';
+        }
+    });
+    return { success: employees.length < initialLength };
 }
 
 export async function getOrderStats() {

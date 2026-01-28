@@ -32,6 +32,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <SidebarItem icon="orders" label="Ordens de Serviço" href="/orders" />
           <SidebarItem icon="new" label="Nova OS" href="/orders/new" />
         </nav>
+        
+        <div>
+          <SidebarItem icon="settings" label="Configurações" href="/settings" />
+        </div>
       </aside>
 
       <main className="flex-1 overflow-y-auto">
