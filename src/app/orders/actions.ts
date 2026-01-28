@@ -38,7 +38,7 @@ const FormSchema = z.object({
 
 const CreateOrderSchema = FormSchema.omit({ id: true, date: true });
 
-export async function createOrder(formData: FormData) {
+export async function createOrder(formData: FormData, user: {name: string}) {
   const rawFormData = Object.fromEntries(formData.entries());
   
   const validatedFields = CreateOrderSchema.safeParse(rawFormData);
@@ -52,8 +52,6 @@ export async function createOrder(formData: FormData) {
 
   try {
     const data = validatedFields.data;
-    // This is a mock implementation. In a real app, you'd get the user from the session.
-    const user = { name: 'Admin' };
     
     const orderData = {
         ...data,
@@ -63,10 +61,9 @@ export async function createOrder(formData: FormData) {
         contact: data.contact ?? '',
         dll: data.dll ?? '',
         remoteCode: data.remoteCode ?? '',
-        lastUpdatedBy: user.name,
-    } as Omit<Order, 'id'| 'date' | 'status' | 'checklist'>;
+    } as Omit<Order, 'id'| 'date' | 'status' | 'checklist'| 'updatedAt' | 'lastUpdatedBy'>;
     
-    await dbCreateOrder(orderData);
+    await dbCreateOrder(orderData, user);
   } catch (error) {
     return {
       message: 'Erro de banco de dados: Falha ao criar ordem de serviço.',

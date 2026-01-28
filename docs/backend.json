@@ -1,0 +1,134 @@
+{
+  "entities": {
+    "Order": {
+      "title": "Order",
+      "description": "Represents a service order.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The unique identifier for the order."
+        },
+        "client": {
+          "type": "string",
+          "description": "The name of the client."
+        },
+        "document": {
+          "type": "string",
+          "description": "The client's document (CPF/CNPJ)."
+        },
+        "contact": {
+          "type": "string",
+          "description": "The client's contact information."
+        },
+        "city": {
+          "type": "string",
+          "description": "The city of the service."
+        },
+        "state": {
+          "type": "string",
+          "description": "The state of the service."
+        },
+        "orderNow": {
+          "type": "string",
+          "enum": ["Sim", "Não"]
+        },
+        "mobile": {
+          "type": "string",
+          "enum": ["Sim", "Não"]
+        },
+        "ifoodIntegration": {
+          "type": "string",
+          "enum": ["Sim", "Não"]
+        },
+        "ifoodEmail": {
+          "type": "string"
+        },
+        "ifoodPassword": {
+          "type": "string"
+        },
+        "dll": {
+          "type": "string"
+        },
+        "remoteCode": {
+          "type": "string"
+        },
+        "certificateFile": {
+          "type": "string"
+        },
+        "assignedTo": {
+          "type": "string",
+          "description": "The technician assigned to the order."
+        },
+        "service": {
+          "type": "string",
+          "description": "The title of the service."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Pendente", "Em Andamento", "Concluída"]
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["Baixa", "Média", "Alta", "Urgente"]
+        },
+        "description": {
+          "type": "string"
+        },
+        "checklist": {
+          "type": "object",
+          "properties": {
+            "importacaoProdutos": { "type": "boolean" },
+            "adicionaisOpcionais": { "type": "boolean" },
+            "codigoPDV": { "type": "boolean" },
+            "preco": { "type": "boolean" },
+            "bairros": { "type": "boolean" },
+            "imagens": { "type": "boolean" },
+            "fiscal": { "type": "boolean" }
+          }
+        },
+        "lastUpdatedBy": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "client", "city", "state", "service", "status", "date", "priority"]
+    },
+    "Employee": {
+      "title": "Employee",
+      "description": "Represents a technician/employee.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the employee."
+        }
+      },
+      "required": ["name"]
+    }
+  },
+  "auth": {
+    "providers": ["password"]
+  },
+  "firestore": {
+    "/orders/{orderId}": {
+      "schema": {
+        "$ref": "#/entities/Order"
+      },
+      "description": "Stores service order documents."
+    },
+    "/employees/{employeeId}": {
+      "schema": {
+        "$ref": "#/entities/Employee"
+      },
+      "description": "Stores employee documents."
+    }
+  }
+}

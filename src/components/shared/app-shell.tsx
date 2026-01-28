@@ -5,15 +5,29 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   ClipboardList,
+  LogOut,
+  User as UserIcon,
 } from 'lucide-react';
+import { useAuth } from '@/components/auth/auth-provider';
 
 import { SearchInput } from './search-input';
 import { SidebarItem } from './sidebar-item';
 import { getPageTitle } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const pageTitle = getPageTitle(pathname);
+  const { user, logout } = useAuth();
 
   return (
     <div className="flex h-screen bg-background text-foreground font-sans">
@@ -48,6 +62,33 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <div className="hidden sm:block">
                     <SearchInput />
                 </div>
+                {user && (
+                   <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                        <Avatar className="h-9 w-9">
+                          <AvatarImage src="#" alt={user.name} />
+                          <AvatarFallback>{user.name?.[0].toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                      <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-medium leading-none">{user.name}</p>
+                          <p className="text-xs leading-none text-muted-foreground">
+                            {user.email}
+                          </p>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={logout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Sair</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
             </div>
           </div>
         </header>

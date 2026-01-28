@@ -29,6 +29,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import type { Employee } from '@/lib/types';
+import { useAuth } from '../auth/auth-provider';
 
 const FormSchema = z.object({
   client: z.string().min(1, 'Nome do cliente é obrigatório.'),
@@ -76,6 +77,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [isSuggesting, setIsSuggesting] = useState(false);
+  const { user } = useAuth();
   const {
     register,
     handleSubmit,
@@ -137,6 +139,10 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
 
 
   const onSubmit = (data: FormValues) => {
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Erro', description: 'Você precisa estar logado para criar uma ordem.' });
+        return;
+    }
     startTransition(async () => {
       const formData = new FormData();
       const finalData = { ...data };
@@ -154,7 +160,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
         }
       });
 
-      const result = await createOrder(formData);
+      const result = await createOrder(formData, user);
       if (result?.errors) {
         // Handle errors
       } else if (result?.message) {

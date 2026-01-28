@@ -32,6 +32,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useAuth } from '../auth/auth-provider';
 
 function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
   const isYes = value === 'Sim';
@@ -80,14 +81,14 @@ function DetailSection({
 
 export default function OrderDetails({ order, employees }: { order: Order, employees: Employee[] }) {
   const { toast } = useToast();
-  // Mock user since login is disabled for now
-  const user = { name: 'Admin' };
+  const { user } = useAuth();
   const [isUpdating, setIsUpdating] = React.useState(false);
   const [checklist, setChecklist] = React.useState<ChecklistItems>(order.checklist);
   const [description, setDescription] = React.useState(order.description);
   const [isSavingDescription, setIsSavingDescription] = React.useState(false);
 
   const handleChecklistChange = async (item: keyof ChecklistItems, checked: boolean) => {
+    if (!user) return;
     const updatedChecklist = { ...checklist, [item]: checked };
     setChecklist(updatedChecklist);
     
@@ -100,7 +101,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
   };
 
   const handleSaveDescription = async () => {
-    if (description === order.description) return;
+    if (description === order.description || !user) return;
     setIsSavingDescription(true);
     const result = await updateOrderDescription(order.id, description, user);
     if(result.message?.includes('sucesso')) {
@@ -123,6 +124,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
 
 
   const handleUpdateStatus = async (status: 'Em Andamento' | 'Concluída') => {
+    if (!user) return;
     setIsUpdating(true);
     const result = await updateOrderStatus(order.id, status, user);
     if(result.message?.includes('sucesso')) {
@@ -277,7 +279,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
         </div>
       </Card>
 
-      {order.status !== 'Concluída' && (
+      {order.status !== 'Concluída' && user &&(
         <div className="flex gap-4 no-print">
             {order.status === 'Pendente' && (
                 <Button 
