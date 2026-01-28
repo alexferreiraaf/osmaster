@@ -91,6 +91,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
       mobile: 'Não',
       ifoodIntegration: 'Não',
       priority: 'Média',
+      assignedTo: 'none',
     },
   });
 
@@ -189,10 +190,11 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
             <Label>Atribuído para</Label>
             <div className="flex items-center gap-2">
                 <Controller
+                key={employees.join(',')}
                 control={control}
                 name="assignedTo"
                 render={({ field }) => (
-                    <Select key={employees.join(',')} onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger className="w-full"><SelectValue placeholder="Selecione..." /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="none">Nenhum</SelectItem>
