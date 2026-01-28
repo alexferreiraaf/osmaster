@@ -61,7 +61,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { success: true };
     } catch (error: any) {
         setLoading(false);
-        return { success: false, message: 'Credenciais inválidas ou erro no login.' };
+        let message = 'Credenciais inválidas ou erro no login.';
+        if (error.code === 'auth/invalid-credential') {
+            message = 'E-mail ou senha inválidos.';
+        } else if (error.code === 'auth/invalid-api-key') {
+             message = 'Chave de API inválida. Verifique sua configuração do Firebase em src/firebase/config.ts.';
+        }
+        return { success: false, message };
     }
   };
 
@@ -79,8 +85,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error: any) {
         setLoading(false);
         let message = 'Falha ao criar conta. Tente novamente.';
-        if (error.code === 'auth/email-already-in-use') {
-            message = 'Este e-mail já está em uso.';
+        switch (error.code) {
+            case 'auth/email-already-in-use':
+                message = 'Este e-mail já está em uso.';
+                break;
+            case 'auth/weak-password':
+                message = 'A senha é muito fraca. Ela deve ter pelo menos 6 caracteres.';
+                break;
+            case 'auth/operation-not-allowed':
+                message = 'Cadastro por e-mail/senha não está ativado no Firebase Console.';
+                break;
+            case 'auth/invalid-api-key':
+                message = 'Chave de API inválida. Verifique sua configuração do Firebase em src/firebase/config.ts.';
+                break;
+            default:
+                message = error.message; // Use a mensagem de erro do Firebase se for outra coisa
+                break;
         }
         return { success: false, message };
     }
