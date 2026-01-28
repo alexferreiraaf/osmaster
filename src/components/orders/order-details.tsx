@@ -30,7 +30,6 @@ import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useAuth } from '@/hooks/use-auth';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -81,14 +80,14 @@ function DetailSection({
 
 export default function OrderDetails({ order, employees }: { order: Order, employees: Employee[] }) {
   const { toast } = useToast();
-  const { user } = useAuth();
+  // Mock user since login is disabled for now
+  const user = { name: 'Admin' };
   const [isUpdating, setIsUpdating] = React.useState(false);
   const [checklist, setChecklist] = React.useState<ChecklistItems>(order.checklist);
   const [description, setDescription] = React.useState(order.description);
   const [isSavingDescription, setIsSavingDescription] = React.useState(false);
 
   const handleChecklistChange = async (item: keyof ChecklistItems, checked: boolean) => {
-    if (!user) return;
     const updatedChecklist = { ...checklist, [item]: checked };
     setChecklist(updatedChecklist);
     
@@ -101,7 +100,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
   };
 
   const handleSaveDescription = async () => {
-    if (description === order.description || !user) return;
+    if (description === order.description) return;
     setIsSavingDescription(true);
     const result = await updateOrderDescription(order.id, description, user);
     if(result.message?.includes('sucesso')) {
@@ -124,7 +123,6 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
 
 
   const handleUpdateStatus = async (status: 'Em Andamento' | 'Concluída') => {
-    if (!user) return;
     setIsUpdating(true);
     const result = await updateOrderStatus(order.id, status, user);
     if(result.message?.includes('sucesso')) {
