@@ -12,7 +12,7 @@ import {
   Wand2,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, type ReactNode } from 'react';
 
 import { createOrder, suggestTechnicianAction } from '@/app/orders/actions';
 import { Button } from '@/components/ui/button';
@@ -52,10 +52,19 @@ const FormSchema = z.object({
 
 type FormValues = z.infer<typeof FormSchema>;
 
-const FormSection = ({ title, icon, children }: { title: string, icon: React.ReactNode, children: React.ReactNode }) => (
+type FormIconType = 'user' | 'settings' | 'shield' | 'hard-drive';
+
+const formIconMap: Record<FormIconType, ReactNode> = {
+    user: <User size={20} className="text-primary" />,
+    settings: <Settings size={20} className="text-primary" />,
+    shield: <Shield size={20} className="text-primary" />,
+    'hard-drive': <HardDrive size={20} className="text-primary" />,
+};
+
+const FormSection = ({ title, icon, children }: { title: string, icon: FormIconType, children: React.ReactNode }) => (
   <div className="space-y-4">
     <div className="flex items-center gap-3 border-b pb-3">
-      {icon}
+      {formIconMap[icon]}
       <h3 className="font-bold text-lg text-foreground">{title}</h3>
     </div>
     {children}
@@ -152,7 +161,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      <FormSection title="Dados do Cliente" icon={<User size={20} className="text-primary" />}>
+      <FormSection title="Dados do Cliente" icon="user">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <Label htmlFor="client">Nome do Cliente *</Label>
@@ -195,7 +204,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
         </div>
       </FormSection>
 
-      <FormSection title="Configurações e Integrações" icon={<Settings size={20} className="text-primary" />}>
+      <FormSection title="Configurações e Integrações" icon="settings">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {['orderNow', 'mobile', 'ifoodIntegration'].map((id) => (
             <div key={id}>
@@ -221,7 +230,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
         )}
       </FormSection>
 
-      <FormSection title="Dados Técnicos e Acesso" icon={<Shield size={20} className="text-primary" />}>
+      <FormSection title="Dados Técnicos e Acesso" icon="shield">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
           <div><Label htmlFor="dll">DLL</Label><Input id="dll" {...register('dll')} /></div>
           <div><Label htmlFor="remoteCode">AnyDesk / TeamViewer</Label><Input id="remoteCode" {...register('remoteCode')} /></div>
@@ -232,7 +241,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
         </div>
       </FormSection>
 
-      <FormSection title="Sobre o Serviço" icon={<HardDrive size={20} className="text-primary" />}>
+      <FormSection title="Sobre o Serviço" icon="hard-drive">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="service">Título do Serviço *</Label>

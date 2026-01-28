@@ -5,21 +5,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   ClipboardList,
-  LayoutDashboard,
-  FileText,
-  Plus,
 } from 'lucide-react';
 
 import { SearchInput } from './search-input';
 import { SidebarItem } from './sidebar-item';
-
-function getPageTitle(pathname: string) {
-  if (pathname.startsWith('/orders/new')) return 'Nova Ordem de Serviço';
-  if (pathname.startsWith('/orders/')) return 'Detalhes da OS';
-  if (pathname.startsWith('/orders')) return 'Todas as Ordens';
-  if (pathname.startsWith('/dashboard')) return 'Resumo Geral';
-  return 'OS Manager Pro';
-}
+import { getPageTitle } from '@/lib/utils';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -38,9 +28,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <nav className="space-y-2 flex-1">
-          <SidebarItem icon={<LayoutDashboard size={20} />} label="Painel" href="/dashboard" />
-          <SidebarItem icon={<FileText size={20} />} label="Ordens de Serviço" href="/orders" />
-          <SidebarItem icon={<Plus size={20} />} label="Nova OS" href="/orders/new" />
+          <SidebarItem icon="dashboard" label="Painel" href="/dashboard" />
+          <SidebarItem icon="orders" label="Ordens de Serviço" href="/orders" />
+          <SidebarItem icon="new" label="Nova OS" href="/orders/new" />
         </nav>
       </aside>
 

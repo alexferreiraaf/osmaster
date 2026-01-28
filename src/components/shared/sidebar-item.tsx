@@ -3,9 +3,18 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { LayoutDashboard, FileText, Plus } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+
+type IconType = 'dashboard' | 'orders' | 'new';
+
+const iconMap: Record<IconType, React.ReactNode> = {
+  dashboard: <LayoutDashboard size={20} />,
+  orders: <FileText size={20} />,
+  new: <Plus size={20} />,
+};
 
 export function SidebarItem({
   href,
@@ -13,7 +22,7 @@ export function SidebarItem({
   label,
 }: {
   href: string;
-  icon: React.ReactNode;
+  icon: IconType;
   label: string;
 }) {
   const pathname = usePathname();
@@ -29,7 +38,7 @@ export function SidebarItem({
       )}
     >
       <Link href={href}>
-        {icon}
+        {iconMap[icon]}
         <span>{label}</span>
       </Link>
     </Button>

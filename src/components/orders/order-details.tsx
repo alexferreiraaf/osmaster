@@ -17,7 +17,6 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -41,19 +40,28 @@ function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
   );
 }
 
+type DetailIconType = 'user' | 'monitor' | 'settings' | 'hard-drive';
+
+const detailIconMap: Record<DetailIconType, React.ReactNode> = {
+    user: <User size={14} />,
+    monitor: <Monitor size={14} />,
+    settings: <Settings size={14} />,
+    'hard-drive': <HardDrive size={14} />,
+};
+
 function DetailSection({
   title,
   icon,
   children,
 }: {
   title: string;
-  icon: React.ReactNode;
+  icon: DetailIconType;
   children: React.ReactNode;
 }) {
   return (
     <div>
       <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
-        {icon} {title}
+        {detailIconMap[icon]} {title}
       </h4>
       {children}
     </div>
@@ -107,7 +115,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
             <div className="space-y-6">
-                <DetailSection title="Dados do Cliente" icon={<User size={14} />}>
+                <DetailSection title="Dados do Cliente" icon="user">
                     <div className="bg-secondary/50 p-4 rounded-xl space-y-2">
                         <p className="text-lg font-bold">{order.client}</p>
                         <p className="text-sm text-foreground/80"><span className="font-semibold">Doc:</span> {order.document || 'N/A'}</p>
@@ -116,7 +124,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                     </div>
                 </DetailSection>
 
-                <DetailSection title="Acesso Remoto e Software" icon={<Monitor size={14} />}>
+                <DetailSection title="Acesso Remoto e Software" icon="monitor">
                     <div className="bg-secondary/50 p-4 rounded-xl grid grid-cols-2 gap-4">
                         <div>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase">AnyDesk/TV</p>
@@ -135,7 +143,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
             </div>
             
             <div className="space-y-6">
-                 <DetailSection title="Status de Módulos" icon={<Settings size={14} />}>
+                 <DetailSection title="Status de Módulos" icon="settings">
                       <div className="grid grid-cols-3 gap-2">
                         <InfoBadge label="Pedido Agora" value={order.orderNow} />
                         <InfoBadge label="Mobile" value={order.mobile} />
@@ -150,7 +158,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                       )}
                 </DetailSection>
 
-                <DetailSection title="Detalhes do Serviço" icon={<HardDrive size={14} />}>
+                <DetailSection title="Detalhes do Serviço" icon="hard-drive">
                       <div className="border-l-4 border-primary pl-4 py-1">
                         <p className="font-bold text-lg text-foreground">{order.service}</p>
                         <p className="text-xs font-bold text-muted-foreground uppercase mt-3">Prioridade: {order.priority}</p>
