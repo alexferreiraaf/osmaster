@@ -109,9 +109,10 @@ export async function createOrder(
         });
       }).catch(error => {
         console.error("Upload failed", error);
-        // Optionally, update the document to show that the upload failed
+        // Update the document to show that the upload failed, including the error message.
         updateDoc(newOrderRef, {
-            certificateFile: `(Falha no envio) ${certificate.name}`
+            certificateFile: `(Falha no envio) ${certificate.name}`,
+            description: `Falha no upload do certificado: ${error.message}\n\n${newOrder.description || ''}`
         });
       });
     }
