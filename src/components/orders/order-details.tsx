@@ -213,7 +213,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase">DLL Versão</p>
-                                <p className="text-sm font-bold">{order.dll || '---'}</p>
+                                <p className="text-sm font-bold">{order.dll && order.dll.length > 20 ? `${order.dll.substring(0, 20)}...` : order.dll || '---'}</p>
                             </div>
                             <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => copyToClipboard(order.dll, 'DLL')}>
                                 <Copy size={16} />
