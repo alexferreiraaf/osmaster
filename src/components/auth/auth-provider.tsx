@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (error.code === 'auth/invalid-credential') {
             message = 'E-mail ou senha inválidos.';
         } else if (error.code === 'auth/api-key-not-valid') {
-             message = 'Chave de API inválida. Verifique sua configuração do Firebase em src/firebase/config.ts.';
+             message = 'Chave de API inválida. Verifique as variáveis de ambiente do Firebase no seu arquivo .env.';
         }
         return { success: false, message };
     }
@@ -100,7 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 message = 'Cadastro por e-mail/senha não está ativado no Firebase Console.';
                 break;
             case 'auth/api-key-not-valid':
-                message = 'Chave de API inválida. Verifique sua configuração do Firebase em src/firebase/config.ts.';
+                message = 'Chave de API inválida. Verifique as variáveis de ambiente do Firebase no seu arquivo .env.';
                 break;
             default:
                 message = error.message; // Use a mensagem de erro do Firebase se for outra coisa

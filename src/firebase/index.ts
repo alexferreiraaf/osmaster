@@ -8,6 +8,11 @@ let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
 
+// Validate firebase config to provide a better developer experience
+if (!firebaseConfig.apiKey) {
+    throw new Error('Firebase configuration is missing or incomplete. Make sure all NEXT_PUBLIC_FIREBASE_ variables are set in your .env file.');
+}
+
 if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);
 } else {
