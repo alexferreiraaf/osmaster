@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { getOrderById, getEmployees } from '@/lib/data';
 import OrderDetails from '@/components/orders/order-details';
 import type { Order, Employee } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default function OrderDetailsPage({ params }: { params: { id: string } }) {
+export default function OrderDetailsPage() {
+  const params = useParams<{ id: string }>();
   const [order, setOrder] = useState<Order | undefined>(undefined);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,8 +16,9 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
+      const id = params.id as string;
       const [orderData, employeesData] = await Promise.all([
-        getOrderById(params.id),
+        getOrderById(id),
         getEmployees(),
       ]);
       
@@ -25,7 +27,9 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
       setLoading(false);
     }
 
-    fetchData();
+    if (params.id) {
+      fetchData();
+    }
   }, [params.id]);
 
   if (loading) {
