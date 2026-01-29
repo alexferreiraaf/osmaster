@@ -11,6 +11,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/auth-provider';
+import { useOrderNotifications } from '@/hooks/use-order-notifications';
 
 import { SearchInput } from './search-input';
 import { SidebarItem } from './sidebar-item';
@@ -42,6 +43,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pageTitle = getPageTitle(pathname);
   const { user, logout } = useAuth();
+  
+  useOrderNotifications();
 
   const isAuthPage = pathname === '/' || pathname === '/login' || pathname === '/register';
 
