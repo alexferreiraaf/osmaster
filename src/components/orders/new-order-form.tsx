@@ -47,6 +47,7 @@ const FormSchema = z.object({
   dll: z.string().optional(),
   remoteCode: z.string().optional(),
   certificateFile: z.any().optional(),
+  imageFile: z.any().optional(),
   service: z.string().min(1, 'Título do serviço é obrigatório.'),
   priority: z.enum(['Baixa', 'Média', 'Alta', 'Urgente']),
   description: z.string().optional(),
@@ -146,10 +147,13 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
     }
     startTransition(async () => {
        try {
-            const fileList = data.certificateFile as FileList;
-            const certificate = fileList && fileList.length > 0 ? fileList[0] : undefined;
+            const certFileList = data.certificateFile as FileList;
+            const certificate = certFileList && certFileList.length > 0 ? certFileList[0] : undefined;
             
-            const { certificateFile, ...rest } = data;
+            const imageFileList = data.imageFile as FileList;
+            const image = imageFileList && imageFileList.length > 0 ? imageFileList[0] : undefined;
+
+            const { certificateFile, imageFile, ...rest } = data;
 
             const dataToSave = {
                 ...rest,
@@ -163,7 +167,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
                 description: data.description ?? '',
             };
 
-            await createOrder(dataToSave, user, certificate);
+            await createOrder(dataToSave, user, certificate, image);
 
             toast({ title: 'Sucesso!', description: 'Nova ordem de serviço criada.' });
             router.push('/orders');
@@ -279,7 +283,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
       </FormSection>
 
       <FormSection title="Dados Técnicos e Acesso" icon="shield">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
           <div>
             <Label htmlFor="dll">DLL</Label>
             <Controller
@@ -301,6 +305,10 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
           <div>
             <Label htmlFor="certificateFile">Certificado Digital (.pfx)</Label>
             <Input id="certificateFile" type="file" accept=".pfx" {...register('certificateFile')} className="pt-2"/>
+          </div>
+           <div>
+            <Label htmlFor="imageFile">Imagem da OS (.png, .jpg)</Label>
+            <Input id="imageFile" type="file" accept="image/png, image/jpeg" {...register('imageFile')} className="pt-2"/>
           </div>
         </div>
       </FormSection>

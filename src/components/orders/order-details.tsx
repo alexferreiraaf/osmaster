@@ -17,6 +17,7 @@ import {
   UserCheck,
   Calendar,
   Copy,
+  Paperclip,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,6 +36,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useAuth } from '../auth/auth-provider';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
   const isYes = value === 'Sim';
@@ -51,7 +53,7 @@ function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
   );
 }
 
-type DetailIconType = 'user' | 'monitor' | 'settings' | 'hard-drive' | 'checklist' | 'history';
+type DetailIconType = 'user' | 'monitor' | 'settings' | 'hard-drive' | 'checklist' | 'history' | 'attachments';
 
 const detailIconMap: Record<DetailIconType, React.ReactNode> = {
     user: <User size={14} />,
@@ -59,7 +61,8 @@ const detailIconMap: Record<DetailIconType, React.ReactNode> = {
     settings: <Settings size={14} />,
     'hard-drive': <HardDrive size={14} />,
     checklist: <ListChecks size={14} />,
-    history: <Clock size={14} />
+    history: <Clock size={14} />,
+    attachments: <Paperclip size={14} />,
 };
 
 function DetailSection({
@@ -219,20 +222,69 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                                 <Copy size={16} />
                             </Button>
                         </div>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase">Certificado Digital</p>
-                                <p className="text-sm font-bold">{order.certificateFileName || 'Nenhum arquivo enviado'}</p>
-                            </div>
-                            {order.certificateDataUrl && (
-                                <Button asChild variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-                                    <a href={order.certificateDataUrl} download={order.certificateFileName}>
-                                        <Download size={16} />
-                                    </a>
-                                </Button>
-                            )}
-                        </div>
                     </div>
+                </DetailSection>
+
+                <DetailSection title="Anexos" icon="attachments">
+                  <div className="bg-secondary/50 p-4 rounded-xl grid grid-cols-1 gap-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase">
+                          Certificado Digital
+                        </p>
+                        <p className="text-sm font-bold">
+                          {order.certificateFileName || 'Nenhum'}
+                        </p>
+                      </div>
+                      {order.certificateDataUrl && (
+                        <Button asChild variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                          <a href={order.certificateDataUrl} download={order.certificateFileName}>
+                            <Download size={16} />
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase">
+                          Imagem
+                        </p>
+                        <p className="text-sm font-bold">
+                          {order.imageFileName || 'Nenhuma'}
+                        </p>
+                      </div>
+                      {order.imageDataUrl && (
+                        <Button asChild variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                          <a href={order.imageDataUrl} download={order.imageFileName}>
+                            <Download size={16} />
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                    {order.imageDataUrl && (
+                      <div>
+                        <Label className="text-xs font-bold text-muted-foreground uppercase">
+                          Pré-visualização
+                        </Label>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <img
+                              src={order.imageDataUrl}
+                              alt="Imagem da OS"
+                              className="mt-1 rounded-lg border aspect-video w-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                            />
+                          </DialogTrigger>
+                          <DialogContent className="max-w-4xl p-2">
+                            <img
+                              src={order.imageDataUrl}
+                              alt="Imagem da OS"
+                              className="rounded-lg w-full h-auto"
+                            />
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                    )}
+                  </div>
                 </DetailSection>
 
                  <DetailSection title="Checklist de Implantação" icon="checklist">

@@ -63,9 +63,10 @@ export async function getOrderById(id: string): Promise<Order | undefined> {
 }
 
 export async function createOrder(
-  orderData: Omit<Order, 'id' | 'date' | 'status' | 'checklist' | 'updatedAt' | 'lastUpdatedBy' | 'certificateFileName' | 'certificateDataUrl'>,
+  orderData: Omit<Order, 'id' | 'date' | 'status' | 'checklist' | 'updatedAt' | 'lastUpdatedBy' | 'certificateFileName' | 'certificateDataUrl' | 'imageFileName' | 'imageDataUrl'>,
   user: User,
-  certificate?: File
+  certificate?: File,
+  image?: File
 ): Promise<void> {
     const ordersRef = collection(db, "orders");
     const querySnapshot = await getDocs(ordersRef);
@@ -89,12 +90,23 @@ export async function createOrder(
         }
     }
 
+    let imageDataUrl: string | undefined = undefined;
+    if (image) {
+        try {
+            imageDataUrl = await fileToDataUrl(image);
+        } catch (error) {
+            console.error("Error converting image to data URL", error);
+        }
+    }
+
     const newOrderData = {
         ...orderData,
         date: serverTimestamp(),
         status: 'Pendente' as OrderStatus,
         certificateFileName: certificate?.name || '',
         certificateDataUrl: certificateDataUrl || '',
+        imageFileName: image?.name || '',
+        imageDataUrl: imageDataUrl || '',
         checklist: {
             importacaoProdutos: false,
             adicionaisOpcionais: false,

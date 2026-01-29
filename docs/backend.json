@@ -57,6 +57,14 @@
           "type": "string",
           "description": "The Base64 encoded content of the digital certificate."
         },
+        "imageFileName": {
+          "type": "string",
+          "description": "The name of the uploaded image file."
+        },
+        "imageDataUrl": {
+          "type": "string",
+          "description": "The Base64 encoded content of the image."
+        },
         "assignedTo": {
           "type": "string",
           "description": "The technician assigned to the order."

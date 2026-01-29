@@ -27,6 +27,8 @@ export interface Order {
   remoteCode: string;
   certificateFileName?: string;
   certificateDataUrl?: string;
+  imageFileName?: string;
+  imageDataUrl?: string;
   assignedTo: string;
   service: string;
   status: OrderStatus;
