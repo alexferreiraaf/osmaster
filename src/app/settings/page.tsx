@@ -14,11 +14,21 @@ export default function SettingsPage() {
     async function fetchEmployees() {
       setLoading(true);
       const data = await getEmployees();
-      setEmployees(data);
+      setEmployees(data.sort());
       setLoading(false);
     }
     fetchEmployees();
   }, []);
+
+  const handleEmployeeAdded = (newEmployee: Employee) => {
+    setEmployees((currentEmployees) => [...currentEmployees, newEmployee].sort());
+  };
+
+  const handleEmployeeDeleted = (deletedEmployee: Employee) => {
+    setEmployees((currentEmployees) =>
+      currentEmployees.filter((employee) => employee !== deletedEmployee)
+    );
+  };
 
   if (loading) {
       return (
@@ -44,5 +54,11 @@ export default function SettingsPage() {
       );
   }
 
-  return <SettingsForm employees={employees} />;
+  return (
+    <SettingsForm
+      employees={employees}
+      onEmployeeAdded={handleEmployeeAdded}
+      onEmployeeDeleted={handleEmployeeDeleted}
+    />
+  );
 }

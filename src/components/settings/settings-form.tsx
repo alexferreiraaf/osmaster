@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Trash2, UserPlus, Users } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,9 +29,18 @@ const FormSchema = z.object({
 
 type FormValues = z.infer<typeof FormSchema>;
 
-export function SettingsForm({ employees }: { employees: Employee[] }) {
+interface SettingsFormProps {
+  employees: Employee[];
+  onEmployeeAdded: (name: Employee) => void;
+  onEmployeeDeleted: (name: Employee) => void;
+}
+
+export function SettingsForm({
+  employees,
+  onEmployeeAdded,
+  onEmployeeDeleted,
+}: SettingsFormProps) {
   const { toast } = useToast();
-  const router = useRouter();
   const [isPending, startTransition] = React.useTransition();
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -46,13 +54,17 @@ export function SettingsForm({ employees }: { employees: Employee[] }) {
       try {
         await addEmployee(data.name);
         toast({ title: 'Sucesso!', description: `Técnico ${data.name} adicionado.` });
+        onEmployeeAdded(data.name);
         form.reset();
-        router.refresh();
       } catch (error: any) {
         if (error.message?.includes('já existe')) {
-            form.setError('name', { message: error.message });
+          form.setError('name', { message: error.message });
         } else {
-            toast({ variant: 'destructive', title: 'Erro', description: error.message || 'Falha ao adicionar técnico.' });
+          toast({
+            variant: 'destructive',
+            title: 'Erro',
+            description: error.message || 'Falha ao adicionar técnico.',
+          });
         }
       }
     });
@@ -63,9 +75,13 @@ export function SettingsForm({ employees }: { employees: Employee[] }) {
       try {
         await dbDeleteEmployee(name);
         toast({ title: 'Sucesso!', description: `Técnico ${name} removido.` });
-        router.refresh();
+        onEmployeeDeleted(name);
       } catch (error: any) {
-        toast({ variant: 'destructive', title: 'Erro', description: error.message || 'Falha ao remover técnico.' });
+        toast({
+          variant: 'destructive',
+          title: 'Erro',
+          description: error.message || 'Falha ao remover técnico.',
+        });
       }
     });
   };
