@@ -18,6 +18,7 @@ import {
   Calendar,
   Copy,
   Paperclip,
+  RotateCcw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -232,7 +233,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
             <h1 className="text-3xl font-black text-foreground">{order.id}</h1>
             <p className="text-muted-foreground font-medium flex items-center gap-1.5">
                 <Calendar size={14} /> 
-                {order.date && order.date.toDate ? format(order.date.toDate(), "dd 'de' MMMM, yyyy", { locale: ptBR, timeZone: 'UTC' }) : 'Data inválida'}
+                {order.date && order.date.toDate ? format(order.date.toDate(), "dd 'de' MMMM, yyyy", { locale: ptBR }) : 'Data inválida'}
             </p>
             <p className="text-primary font-bold mt-1">Status: {order.status}</p>
           </div>
@@ -427,7 +428,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
         </div>
       </Card>
 
-      {order.status !== 'Concluída' && user &&(
+      {user && (
         <div className="flex gap-4 no-print">
             {order.status === 'Pendente' && (
                 <Button 
@@ -447,6 +448,17 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                     className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700"
                 >
                     <CheckCircle size={18} /> Finalizar Ordem
+                </Button>
+            )}
+            {order.status === 'Concluída' && (
+                <Button 
+                    onClick={() => handleUpdateStatus('Em Andamento')}
+                    disabled={isUpdating}
+                    size="lg"
+                    variant="outline" 
+                    className="flex-1"
+                >
+                    <RotateCcw size={18} /> Reabrir Ordem
                 </Button>
             )}
         </div>
