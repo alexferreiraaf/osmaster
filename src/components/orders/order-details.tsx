@@ -37,6 +37,8 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useAuth } from '../auth/auth-provider';
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
   const isYes = value === 'Sim';
@@ -89,9 +91,55 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
   const router = useRouter();
   const { user } = useAuth();
   const [isUpdating, setIsUpdating] = React.useState(false);
+  const [isDownloading, setIsDownloading] = React.useState(false);
   const [checklist, setChecklist] = React.useState<ChecklistItems>(order.checklist);
   const [description, setDescription] = React.useState(order.description);
   const [isSavingDescription, setIsSavingDescription] = React.useState(false);
+
+  const handleDownloadPdf = () => {
+    const input = document.getElementById('printable-os');
+    if (!input) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao Baixar PDF',
+        description: 'Elemento da OS não encontrado para gerar o PDF.',
+      });
+      return;
+    }
+    
+    setIsDownloading(true);
+
+    html2canvas(input, { scale: 2, useCORS: true }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      const ratio = canvasWidth / canvasHeight;
+      const imgWidth = pdfWidth;
+      const imgHeight = pdfWidth / ratio;
+      
+      let heightToFit = imgHeight < pdfHeight ? imgHeight : pdfHeight;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, heightToFit);
+      pdf.save(`OS-${order.id}.pdf`);
+
+      toast({
+        title: 'Download Iniciado',
+        description: `O arquivo OS-${order.id}.pdf será baixado.`,
+      });
+    }).catch(err => {
+      console.error('oops, something went wrong!', err);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao gerar PDF',
+        description: 'Ocorreu um problema ao criar o arquivo PDF.',
+      });
+    }).finally(() => {
+      setIsDownloading(false);
+    });
+  };
 
   const copyToClipboard = (text: string | undefined, fieldName: string) => {
     if (!text) {
@@ -167,8 +215,13 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
           <Link href="/orders">← Voltar para lista</Link>
         </Button>
         <div className="flex gap-2">
-          <Button onClick={() => window.print()} variant="outline">
-            <Download size={18} /> Baixar OS
+          <Button onClick={handleDownloadPdf} variant="outline" disabled={isDownloading}>
+            {isDownloading ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+            ) : (
+              <Download size={18} />
+            )}
+             Baixar OS
           </Button>
         </div>
       </div>
