@@ -168,7 +168,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
         </Button>
         <div className="flex gap-2">
           <Button onClick={() => window.print()} variant="outline">
-            <Download size={18} /> Imprimir
+            <Download size={18} /> Baixar OS
           </Button>
         </div>
       </div>
