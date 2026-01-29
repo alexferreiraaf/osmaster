@@ -30,12 +30,12 @@ export interface Order {
   assignedTo: string;
   service: string;
   status: OrderStatus;
-  date: string;
+  date: any;
   priority: Priority;
   description: string;
   checklist: ChecklistItems;
   lastUpdatedBy?: string;
-  updatedAt?: string;
+  updatedAt?: any;
 }
 
 export type Employee = string;

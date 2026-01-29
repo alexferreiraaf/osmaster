@@ -5,10 +5,6 @@
       "description": "Represents a service order.",
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "The unique identifier for the order."
-        },
         "client": {
           "type": "string",
           "description": "The name of the client."
@@ -104,7 +100,7 @@
           "format": "date-time"
         }
       },
-      "required": ["id", "client", "city", "state", "service", "status", "date", "priority"]
+      "required": ["client", "city", "state", "service", "status", "date", "priority"]
     },
     "Employee": {
       "title": "Employee",

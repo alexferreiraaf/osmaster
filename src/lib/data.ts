@@ -33,6 +33,7 @@ export async function getOrders(searchTerm?: string): Promise<Order[]> {
   const querySnapshot = await getDocs(q);
   let orders: Order[] = [];
   querySnapshot.forEach((doc) => {
+    // The 'id' is from the document ID, not from the data payload.
     orders.push({ id: doc.id, ...doc.data() } as Order);
   });
 
@@ -54,6 +55,7 @@ export async function getOrderById(id: string): Promise<Order | undefined> {
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
+    // The 'id' is from the document ID, not from the data payload.
     return { id: docSnap.id, ...docSnap.data() } as Order;
   } else {
     return undefined;
@@ -64,7 +66,7 @@ export async function createOrder(
   orderData: Omit<Order, 'id' | 'date' | 'status' | 'checklist' | 'updatedAt' | 'lastUpdatedBy' | 'certificateFileName' | 'certificateDataUrl'>,
   user: User,
   certificate?: File
-): Promise<Order> {
+): Promise<void> {
     const ordersRef = collection(db, "orders");
     const querySnapshot = await getDocs(ordersRef);
     let maxId = 0;
@@ -87,11 +89,10 @@ export async function createOrder(
         }
     }
 
-    const newOrder: Order = {
+    const newOrderData = {
         ...orderData,
-        id: newOrderId,
-        date: new Date().toISOString(),
-        status: 'Pendente',
+        date: serverTimestamp(),
+        status: 'Pendente' as OrderStatus,
         certificateFileName: certificate?.name || '',
         certificateDataUrl: certificateDataUrl || '',
         checklist: {
@@ -104,12 +105,10 @@ export async function createOrder(
             fiscal: false,
         },
         lastUpdatedBy: user.name,
-        updatedAt: new Date().toISOString(),
+        updatedAt: serverTimestamp(),
     };
 
-    await setDoc(newOrderRef, newOrder);
-    
-    return newOrder;
+    await setDoc(newOrderRef, newOrderData);
 }
 
 
@@ -117,42 +116,39 @@ export async function updateOrderStatus(
   id: string,
   status: OrderStatus,
   updatedBy: string
-): Promise<Order | undefined> {
+): Promise<void> {
   const orderRef = doc(db, 'orders', id);
   await updateDoc(orderRef, {
     status: status,
     lastUpdatedBy: updatedBy,
-    updatedAt: new Date().toISOString(),
+    updatedAt: serverTimestamp(),
   });
-  return getOrderById(id);
 }
 
 export async function updateOrderChecklist(
   id: string,
   checklist: ChecklistItems,
   updatedBy: User
-): Promise<Order | undefined> {
+): Promise<void> {
   const orderRef = doc(db, 'orders', id);
   await updateDoc(orderRef, {
     checklist: checklist,
     lastUpdatedBy: updatedBy.name,
-    updatedAt: new Date().toISOString(),
+    updatedAt: serverTimestamp(),
   });
-  return getOrderById(id);
 }
 
 export async function updateOrderDescription(
   id: string,
   description: string,
   updatedBy: User
-): Promise<Order | undefined> {
+): Promise<void> {
   const orderRef = doc(db, 'orders', id);
   await updateDoc(orderRef, {
     description: description,
     lastUpdatedBy: updatedBy.name,
-    updatedAt: new Date().toISOString(),
+    updatedAt: serverTimestamp(),
   });
-  return getOrderById(id);
 }
 
 export async function deleteOrder(id: string): Promise<{ success: boolean }> {

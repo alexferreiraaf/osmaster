@@ -3,14 +3,35 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Allow authenticated users to read and write to the 'orders' collection
     match /orders/{orderId} {
-      allow read, write: if request.auth != null;
+      // Any authenticated user can read orders. This is necessary for the
+      // dashboard and order list pages to function as designed.
+      allow read: if request.auth != null;
+
+      // A user can create an order if they are logged in and they are
+      // correctly identified as the person creating the record.
+      allow create: if request.auth != null &&
+                     request.resource.data.lastUpdatedBy == request.auth.token.name;
+
+      // A user can update an order if they are logged in and they are
+      // correctly identified as the person making the update.
+      // This prevents users from impersonating others in the update history.
+      allow update: if request.auth != null &&
+                     request.resource.data.lastUpdatedBy == request.auth.token.name;
+
+      // Any authenticated user can delete an order. For higher security, this
+      // could be restricted to users with a specific 'admin' role via custom claims.
+      allow delete: if request.auth != null;
     }
 
-    // Allow authenticated users to read and write to the 'employees' collection
     match /employees/{employeeId} {
-      allow read, write: if request.auth != null;
+      // Any authenticated user can read the list of employees. This is needed
+      // to populate the 'assign to' dropdown in the order forms.
+      allow read: if request.auth != null;
+
+      // Any authenticated user can add or remove employees. In a production app
+      // with multiple user roles, this should be restricted to admin users.
+      allow write: if request.auth != null;
     }
   }
 }
