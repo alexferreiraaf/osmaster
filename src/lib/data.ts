@@ -55,26 +55,39 @@ export async function createOrder(
   orderData: Omit<Order, 'id' | 'date' | 'status' | 'checklist' | 'updatedAt' | 'lastUpdatedBy'>,
   user: User
 ): Promise<Order> {
-    const newOrderRef = doc(collection(db, "orders"));
+    const ordersRef = collection(db, "orders");
+    const querySnapshot = await getDocs(ordersRef);
+    let maxId = 0;
+    querySnapshot.forEach((doc) => {
+        const id = parseInt(doc.id, 10);
+        if (!isNaN(id) && id > maxId) {
+            maxId = id;
+        }
+    });
+
+    const newOrderId = (maxId + 1).toString();
+    const newOrderRef = doc(db, "orders", newOrderId);
+
     const newOrder: Order = {
-    ...orderData,
-    id: newOrderRef.id,
-    date: new Date().toISOString(),
-    status: 'Pendente',
-    checklist: {
-      importacaoProdutos: false,
-      adicionaisOpcionais: false,
-      codigoPDV: false,
-      preco: false,
-      bairros: false,
-      imagens: false,
-      fiscal: false,
-    },
-    lastUpdatedBy: user.name,
-    updatedAt: new Date().toISOString(),
-  };
-  await setDoc(newOrderRef, newOrder);
-  return newOrder;
+        ...orderData,
+        id: newOrderId,
+        date: new Date().toISOString(),
+        status: 'Pendente',
+        checklist: {
+            importacaoProdutos: false,
+            adicionaisOpcionais: false,
+            codigoPDV: false,
+            preco: false,
+            bairros: false,
+            imagens: false,
+            fiscal: false,
+        },
+        lastUpdatedBy: user.name,
+        updatedAt: new Date().toISOString(),
+    };
+
+    await setDoc(newOrderRef, newOrder);
+    return newOrder;
 }
 
 export async function updateOrderStatus(
