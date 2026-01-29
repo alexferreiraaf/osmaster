@@ -159,7 +159,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
                 ifoodPassword: data.ifoodPassword ?? '',
                 dll: data.dll ?? '',
                 remoteCode: data.remoteCode ?? '',
-                certificateFile: data.certificateFile instanceof File && data.certificateFile.size > 0 ? data.certificateFile.name : undefined,
+                certificateFile: data.certificateFile instanceof File && data.certificateFile.size > 0 ? data.certificateFile.name : '',
                 assignedTo: data.assignedTo === 'none' ? '' : data.assignedTo ?? '',
                 service: data.service,
                 priority: data.priority,

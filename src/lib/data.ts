@@ -94,12 +94,12 @@ export async function updateOrderStatus(
 export async function updateOrderChecklist(
   id: string,
   checklist: ChecklistItems,
-  updatedBy: string
+  updatedBy: User
 ): Promise<Order | undefined> {
   const orderRef = doc(db, 'orders', id);
   await updateDoc(orderRef, {
     checklist: checklist,
-    lastUpdatedBy: updatedBy,
+    lastUpdatedBy: updatedBy.name,
     updatedAt: new Date().toISOString(),
   });
   return getOrderById(id);
@@ -108,12 +108,12 @@ export async function updateOrderChecklist(
 export async function updateOrderDescription(
   id: string,
   description: string,
-  updatedBy: string
+  updatedBy: User
 ): Promise<Order | undefined> {
   const orderRef = doc(db, 'orders', id);
   await updateDoc(orderRef, {
     description: description,
-    lastUpdatedBy: updatedBy,
+    lastUpdatedBy: updatedBy.name,
     updatedAt: new Date().toISOString(),
   });
   return getOrderById(id);
