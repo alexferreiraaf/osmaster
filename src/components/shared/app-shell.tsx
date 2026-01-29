@@ -23,6 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
+import { ThemeToggle } from './theme-toggle';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -72,6 +73,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <div className="hidden sm:block">
                     <SearchInput />
                 </div>
+                <ThemeToggle />
                 {user && (
                    <DropdownMenu>
                     <DropdownMenuTrigger asChild>
