@@ -72,25 +72,21 @@ export default function DashboardPage() {
           label="Total"
           value={stats!.total}
           icon="total"
-          color="bg-blue-500"
         />
         <StatCard
           label="Em Andamento"
           value={stats!.ongoing}
           icon="ongoing"
-          color="bg-amber-500"
         />
         <StatCard
           label="Concluídas"
           value={stats!.completed}
           icon="completed"
-          color="bg-emerald-500"
         />
         <StatCard
           label="Pendentes"
           value={stats!.pending}
           icon="pending"
-          color="bg-rose-500"
         />
       </div>
 

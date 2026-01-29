@@ -19,21 +19,27 @@ const iconMap: Record<IconType, ReactNode> = {
     pending: <AlertCircle size={20} />,
 };
 
+const colorMap: Record<IconType, string> = {
+  total: 'bg-blue-500',
+  ongoing: 'bg-amber-500',
+  completed: 'bg-emerald-500',
+  pending: 'bg-rose-500',
+};
+
 interface StatCardProps {
   label: string;
   value: number;
   icon: IconType;
-  color: string;
 }
 
-export function StatCard({ label, value, icon, color }: StatCardProps) {
+export function StatCard({ label, value, icon }: StatCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {label}
         </CardTitle>
-        <div className={cn('p-2.5 rounded-lg text-white', color)}>
+        <div className={cn('p-2.5 rounded-lg text-white', colorMap[icon])}>
           {iconMap[icon]}
         </div>
       </CardHeader>
