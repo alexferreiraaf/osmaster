@@ -23,6 +23,12 @@ export default function OrdersPage() {
     fetchOrders();
   }, [query]);
 
+  const handleOrderDeleted = (deletedOrderId: string) => {
+    setOrders((currentOrders) =>
+      currentOrders.filter((order) => order.id !== deletedOrderId)
+    );
+  };
+
   if (loading) {
     return (
         <div className="bg-card rounded-xl shadow-sm border overflow-hidden p-4 space-y-2">
@@ -37,7 +43,7 @@ export default function OrdersPage() {
 
   return (
     <div className="bg-card rounded-xl shadow-sm border overflow-hidden">
-      <OrdersTable orders={orders} />
+      <OrdersTable orders={orders} onOrderDeleted={handleOrderDeleted} />
     </div>
   );
 }

@@ -27,7 +27,7 @@ import {
 import { deleteOrder } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 
-export default function OrdersTable({ orders }: { orders: Order[] }) {
+export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[]; onOrderDeleted: (id: string) => void }) {
   const router = useRouter();
   const { toast } = useToast();
 
@@ -38,7 +38,7 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
         title: 'Sucesso',
         description: "Ordem de serviço deletada.",
       });
-      router.refresh();
+      onOrderDeleted(id);
     } catch(error) {
       toast({
         variant: 'destructive',
