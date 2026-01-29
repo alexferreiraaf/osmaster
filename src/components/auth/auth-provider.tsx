@@ -48,8 +48,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
   
   useEffect(() => {
-    if (!loading && !user && pathname !== '/login' && pathname !== '/register') {
-      router.push('/login');
+    const publicRoutes = ['/', '/login', '/register'];
+    if (!loading && !user && !publicRoutes.includes(pathname)) {
+      router.push('/');
+    }
+    if (!loading && user && publicRoutes.includes(pathname)) {
+      router.push('/dashboard');
     }
   }, [user, loading, pathname, router]);
 
@@ -109,10 +113,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     await signOut(auth);
     setUser(null);
-    router.push('/login');
+    router.push('/');
   };
 
-  if (loading || (!user && pathname !== '/login' && pathname !== '/register')) {
+  const publicRoutes = ['/', '/login', '/register'];
+  if (loading || (!user && !publicRoutes.includes(pathname))) {
     return (
         <div className="h-screen w-full flex items-center justify-center">
             <Spinner />

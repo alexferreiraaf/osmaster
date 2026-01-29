@@ -43,7 +43,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pageTitle = getPageTitle(pathname);
   const { user, logout } = useAuth();
 
-  const isAuthPage = pathname === '/login' || pathname === '/register';
+  const isAuthPage = pathname === '/' || pathname === '/login' || pathname === '/register';
 
   if (isAuthPage) {
     return (

@@ -116,9 +116,9 @@ export function RegisterForm() {
                 {loading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>}
                 Cadastrar
             </Button>
-            <p className="text-sm text-muted-foreground">
+            <p className="mt-4 text-center text-sm text-muted-foreground">
                 Já tem uma conta?{' '}
-                <Link href="/login" className="text-primary hover:underline">
+                <Link href="/" className="text-primary hover:underline">
                     Faça login
                 </Link>
             </p>
