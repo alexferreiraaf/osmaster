@@ -113,6 +113,8 @@ export async function createOrder(
         updateDoc(newOrderRef, {
             certificateFile: `(Falha no envio) ${certificate.name}`,
             description: `Falha no upload do certificado: ${error.message}\n\n${newOrder.description || ''}`
+        }).catch(updateError => {
+            console.error("Failed to update order with upload failure message:", updateError);
         });
       });
     }
