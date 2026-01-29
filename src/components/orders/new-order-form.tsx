@@ -46,7 +46,7 @@ const FormSchema = z.object({
   ifoodPassword: z.string().optional(),
   dll: z.string().optional(),
   remoteCode: z.string().optional(),
-  certificateFile: z.instanceof(File).optional(),
+  certificateFile: z.any().optional(),
   service: z.string().min(1, 'Título do serviço é obrigatório.'),
   priority: z.enum(['Baixa', 'Média', 'Alta', 'Urgente']),
   description: z.string().optional(),
@@ -146,6 +146,9 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
     }
     startTransition(async () => {
        try {
+            const fileList = data.certificateFile as FileList;
+            const certificateFileName = fileList && fileList.length > 0 ? fileList[0].name : '';
+
             const dataToSave: Omit<Order, 'id'| 'date' | 'status' | 'checklist'| 'updatedAt' | 'lastUpdatedBy'> = {
                 client: data.client,
                 document: data.document ?? '',
@@ -159,7 +162,7 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
                 ifoodPassword: data.ifoodPassword ?? '',
                 dll: data.dll ?? '',
                 remoteCode: data.remoteCode ?? '',
-                certificateFile: data.certificateFile instanceof File && data.certificateFile.size > 0 ? data.certificateFile.name : '',
+                certificateFile: certificateFileName,
                 assignedTo: data.assignedTo === 'none' ? '' : data.assignedTo ?? '',
                 service: data.service,
                 priority: data.priority,
