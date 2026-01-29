@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { FileText, MoreVertical, Trash2 } from 'lucide-react';
-import type { Order } from '@/lib/types';
+import type { Order, Priority } from '@/lib/types';
 import {
   Table,
   TableBody,
@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import StatusBadge from '../shared/status-badge';
+import PriorityBadge from '../shared/priority-badge';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +29,7 @@ import { deleteOrder } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[]; onOrderDeleted: (id: string) => void }) {
   const router = useRouter();
@@ -59,18 +61,28 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
     )
   }
 
+  const priorityBorderColors: Record<Priority, string> = {
+    'Urgente': 'border-l-rose-500',
+    'Alta': 'border-l-amber-500',
+    'Média': 'border-l-sky-500',
+    'Baixa': 'border-l-slate-300',
+  };
+
   return (
     <>
         {/* Mobile View - Cards */}
         <div className="md:hidden space-y-3">
              {orders.map((order) => (
-                <Card key={order.id} onClick={() => router.push(`/orders/${order.id}`)} className="cursor-pointer">
+                <Card key={order.id} onClick={() => router.push(`/orders/${order.id}`)} className={cn("cursor-pointer border-l-4", priorityBorderColors[order.priority])}>
                     <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
                     <div className="space-y-1">
                         <CardTitle className="text-sm font-bold text-primary">OS: {order.id}</CardTitle>
                         <p className="text-base font-semibold">{order.client}</p>
                     </div>
-                    <StatusBadge status={order.status} />
+                    <div className="flex flex-col items-end gap-2">
+                        <StatusBadge status={order.status} />
+                        <PriorityBadge priority={order.priority} />
+                    </div>
                     </CardHeader>
                     <CardContent className="text-sm text-muted-foreground">
                     <p>{order.service}</p>
@@ -89,6 +101,7 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                 <TableHead>Atribuído a</TableHead>
                 <TableHead>Cidade/Estado</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Prioridade</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
             </TableHeader>
@@ -96,7 +109,7 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                 {orders.map((order) => (
                 <TableRow
                     key={order.id}
-                    className="hover:bg-muted/50 transition-colors"
+                    className={cn("transition-colors border-l-4 hover:bg-muted/50", priorityBorderColors[order.priority])}
                 >
                     <TableCell
                     onClick={() => router.push(`/orders/${order.id}`)}
@@ -113,6 +126,9 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                     </TableCell>
                     <TableCell>
                     <StatusBadge status={order.status} />
+                    </TableCell>
+                    <TableCell>
+                      <PriorityBadge priority={order.priority} />
                     </TableCell>
                     <TableCell className="text-right">
                          <AlertDialog>

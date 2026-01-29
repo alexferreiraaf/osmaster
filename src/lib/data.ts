@@ -12,7 +12,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { db } from '@/firebase';
-import type { Order, Employee, OrderStatus, ChecklistItems, User } from './types';
+import type { Order, Employee, OrderStatus, ChecklistItems, User, Priority } from './types';
 
 // Simulate API latency
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
@@ -36,6 +36,27 @@ export async function getOrders(searchTerm?: string): Promise<Order[]> {
     // The 'id' is from the document ID, not from the data payload.
     orders.push({ id: doc.id, ...doc.data() } as Order);
   });
+
+  const priorityOrder: Record<Priority, number> = {
+    'Urgente': 4,
+    'Alta': 3,
+    'Média': 2,
+    'Baixa': 1
+  };
+
+  orders.sort((a, b) => {
+    const priorityA = priorityOrder[a.priority] || 0;
+    const priorityB = priorityOrder[b.priority] || 0;
+    if (priorityB !== priorityA) {
+      return priorityB - priorityA;
+    }
+    // If priorities are the same, maintain the date order from Firestore
+    if (a.date && b.date) {
+        return b.date.toMillis() - a.date.toMillis();
+    }
+    return 0;
+  });
+
 
   if (searchTerm) {
     const lowercasedTerm = searchTerm.toLowerCase();
