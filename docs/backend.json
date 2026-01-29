@@ -56,6 +56,10 @@
         "certificateFile": {
           "type": "string"
         },
+        "certificateUrl": {
+          "type": "string",
+          "description": "Download URL for the digital certificate."
+        },
         "assignedTo": {
           "type": "string",
           "description": "The technician assigned to the order."

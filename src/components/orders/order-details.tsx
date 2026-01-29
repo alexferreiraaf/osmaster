@@ -16,6 +16,7 @@ import {
   ListChecks,
   UserCheck,
   Calendar,
+  Copy,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -88,6 +89,22 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
   const [checklist, setChecklist] = React.useState<ChecklistItems>(order.checklist);
   const [description, setDescription] = React.useState(order.description);
   const [isSavingDescription, setIsSavingDescription] = React.useState(false);
+
+  const copyToClipboard = (text: string | undefined, fieldName: string) => {
+    if (!text) {
+        toast({
+            variant: 'destructive',
+            title: 'Campo vazio',
+            description: `Não há nada para copiar no campo ${fieldName}.`,
+        });
+        return;
+    }
+    navigator.clipboard.writeText(text);
+    toast({
+        title: 'Copiado!',
+        description: `${fieldName} copiado para a área de transferência.`,
+    });
+  };
 
   const handleChecklistChange = async (item: keyof ChecklistItems, checked: boolean) => {
     if (!user) return;
@@ -183,18 +200,37 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                 </DetailSection>
 
                 <DetailSection title="Acesso Remoto e Software" icon="monitor">
-                    <div className="bg-secondary/50 p-4 rounded-xl grid grid-cols-2 gap-4">
-                        <div>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase">AnyDesk/TV</p>
-                            <p className="text-sm font-bold">{order.remoteCode || '---'}</p>
+                    <div className="bg-secondary/50 p-4 rounded-xl grid grid-cols-1 gap-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase">AnyDesk/TV</p>
+                                <p className="text-sm font-bold">{order.remoteCode || '---'}</p>
+                            </div>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => copyToClipboard(order.remoteCode, 'Acesso Remoto')}>
+                                <Copy size={16} />
+                            </Button>
                         </div>
-                        <div>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase">DLL Versão</p>
-                            <p className="text-sm font-bold">{order.dll || '---'}</p>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase">DLL Versão</p>
+                                <p className="text-sm font-bold">{order.dll || '---'}</p>
+                            </div>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => copyToClipboard(order.dll, 'DLL')}>
+                                <Copy size={16} />
+                            </Button>
                         </div>
-                        <div className="col-span-2">
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase">Certificado Digital</p>
-                            <p className="text-sm font-bold">{order.certificateFile || 'Nenhum arquivo enviado'}</p>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase">Certificado Digital</p>
+                                <p className="text-sm font-bold">{order.certificateFile || 'Nenhum arquivo enviado'}</p>
+                            </div>
+                            {order.certificateUrl && (
+                                <Button asChild variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                                    <a href={order.certificateUrl} target="_blank" rel="noopener noreferrer" download>
+                                        <Download size={16} />
+                                    </a>
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </DetailSection>

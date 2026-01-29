@@ -147,29 +147,23 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
     startTransition(async () => {
        try {
             const fileList = data.certificateFile as FileList;
-            const certificateFileName = fileList && fileList.length > 0 ? fileList[0].name : '';
+            const certificate = fileList && fileList.length > 0 ? fileList[0] : undefined;
+            
+            const { certificateFile, ...rest } = data;
 
-            const dataToSave: Omit<Order, 'id'| 'date' | 'status' | 'checklist'| 'updatedAt' | 'lastUpdatedBy'> = {
-                client: data.client,
+            const dataToSave = {
+                ...rest,
                 document: data.document ?? '',
                 contact: data.contact ?? '',
-                city: data.city,
-                state: data.state,
-                orderNow: data.orderNow,
-                mobile: data.mobile,
-                ifoodIntegration: data.ifoodIntegration,
                 ifoodEmail: data.ifoodEmail ?? '',
                 ifoodPassword: data.ifoodPassword ?? '',
                 dll: data.dll ?? '',
                 remoteCode: data.remoteCode ?? '',
-                certificateFile: certificateFileName,
                 assignedTo: data.assignedTo === 'none' ? '' : data.assignedTo ?? '',
-                service: data.service,
-                priority: data.priority,
                 description: data.description ?? '',
             };
 
-            await createOrder(dataToSave, user);
+            await createOrder(dataToSave, user, certificate);
 
             toast({ title: 'Sucesso!', description: 'Nova ordem de serviço criada.' });
             router.push('/orders');

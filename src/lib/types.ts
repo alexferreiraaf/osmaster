@@ -26,6 +26,7 @@ export interface Order {
   dll: string;
   remoteCode: string;
   certificateFile?: string;
+  certificateUrl?: string;
   assignedTo: string;
   service: string;
   status: OrderStatus;

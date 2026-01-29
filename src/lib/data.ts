@@ -11,7 +11,8 @@ import {
   serverTimestamp,
   updateDoc,
 } from 'firebase/firestore';
-import { db } from '@/firebase';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, app } from '@/firebase';
 import type { Order, Employee, OrderStatus, ChecklistItems, User } from './types';
 
 // Simulate API latency
@@ -52,8 +53,9 @@ export async function getOrderById(id: string): Promise<Order | undefined> {
 }
 
 export async function createOrder(
-  orderData: Omit<Order, 'id' | 'date' | 'status' | 'checklist' | 'updatedAt' | 'lastUpdatedBy'>,
-  user: User
+  orderData: Omit<Order, 'id' | 'date' | 'status' | 'checklist' | 'updatedAt' | 'lastUpdatedBy' | 'certificateFile' | 'certificateUrl'>,
+  user: User,
+  certificate?: File
 ): Promise<Order> {
     const ordersRef = collection(db, "orders");
     const querySnapshot = await getDocs(ordersRef);
@@ -67,6 +69,17 @@ export async function createOrder(
 
     const newOrderId = (maxId + 1).toString();
     const newOrderRef = doc(db, "orders", newOrderId);
+
+    let certificateFile = '';
+    let certificateUrl = '';
+
+    if (certificate) {
+      const storage = getStorage(app);
+      const storageRef = ref(storage, `certificates/${newOrderId}/${certificate.name}`);
+      await uploadBytes(storageRef, certificate);
+      certificateUrl = await getDownloadURL(storageRef);
+      certificateFile = certificate.name;
+    }
 
     const newOrder: Order = {
         ...orderData,
@@ -84,6 +97,8 @@ export async function createOrder(
         },
         lastUpdatedBy: user.name,
         updatedAt: new Date().toISOString(),
+        certificateFile,
+        certificateUrl,
     };
 
     await setDoc(newOrderRef, newOrder);
