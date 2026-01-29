@@ -36,7 +36,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useAuth } from '../auth/auth-provider';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
   const isYes = value === 'Sim';
@@ -275,6 +275,8 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                             />
                           </DialogTrigger>
                           <DialogContent className="max-w-4xl p-2">
+                            <DialogTitle className="sr-only">Visualização de Imagem</DialogTitle>
+                            <DialogDescription className="sr-only">Imagem da ordem de serviço ampliada.</DialogDescription>
                             <img
                               src={order.imageDataUrl}
                               alt="Imagem da OS"
