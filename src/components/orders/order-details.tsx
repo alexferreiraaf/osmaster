@@ -201,7 +201,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
     try {
       await updateOrderStatus(order.id, status, user.name);
       toast({ title: 'Status Atualizado', description: `Ordem agora está "${status}".`});
-      router.refresh();
+      router.push('/dashboard');
     } catch(error) {
         toast({ variant: 'destructive', title: 'Erro', description: (error as Error).message });
     }
