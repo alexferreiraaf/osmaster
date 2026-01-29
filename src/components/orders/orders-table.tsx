@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { deleteOrder } from '@/app/orders/actions';
+import { deleteOrder } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 
 export default function OrdersTable({ orders }: { orders: Order[] }) {
@@ -32,17 +32,18 @@ export default function OrdersTable({ orders }: { orders: Order[] }) {
   const { toast } = useToast();
 
   const handleDelete = async (id: string) => {
-    const result = await deleteOrder(id);
-    if (result.message) {
+    try {
+      await deleteOrder(id);
       toast({
         title: 'Sucesso',
-        description: result.message,
+        description: "Ordem de serviço deletada.",
       });
-    } else {
+      router.refresh();
+    } catch(error) {
       toast({
         variant: 'destructive',
         title: 'Erro',
-        description: 'Não foi possível deletar a ordem de serviço.',
+        description: (error as Error).message || 'Não foi possível deletar a ordem de serviço.',
       });
     }
   };

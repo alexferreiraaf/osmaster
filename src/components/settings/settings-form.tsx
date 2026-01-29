@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { addEmployeeAction, deleteEmployeeAction } from '@/app/settings/actions';
+import { addEmployee, deleteEmployee as dbDeleteEmployee } from '@/lib/data';
 import type { Employee } from '@/lib/types';
 import {
   AlertDialog,
@@ -43,30 +43,29 @@ export function SettingsForm({ employees }: { employees: Employee[] }) {
 
   const onSubmit = (data: FormValues) => {
     startTransition(async () => {
-      const formData = new FormData();
-      formData.append('name', data.name);
-      const result = await addEmployeeAction(formData);
-
-      if (result.errors) {
-        form.setError('name', { message: result.errors.name?.join(', ') });
-      } else if (result.success) {
-        toast({ title: 'Sucesso!', description: result.message });
+      try {
+        await addEmployee(data.name);
+        toast({ title: 'Sucesso!', description: `Técnico ${data.name} adicionado.` });
         form.reset();
         router.refresh();
-      } else {
-        toast({ variant: 'destructive', title: 'Erro', description: result.message });
+      } catch (error: any) {
+        if (error.message?.includes('já existe')) {
+            form.setError('name', { message: error.message });
+        } else {
+            toast({ variant: 'destructive', title: 'Erro', description: error.message || 'Falha ao adicionar técnico.' });
+        }
       }
     });
   };
 
   const handleDelete = (name: string) => {
     startTransition(async () => {
-      const result = await deleteEmployeeAction(name);
-      if (result.success) {
-        toast({ title: 'Sucesso!', description: result.message });
+      try {
+        await dbDeleteEmployee(name);
+        toast({ title: 'Sucesso!', description: `Técnico ${name} removido.` });
         router.refresh();
-      } else {
-        toast({ variant: 'destructive', title: 'Erro', description: result.message });
+      } catch (error: any) {
+        toast({ variant: 'destructive', title: 'Erro', description: error.message || 'Falha ao remover técnico.' });
       }
     });
   };

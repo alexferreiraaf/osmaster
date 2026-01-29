@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Download,
   User,
@@ -23,8 +24,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import type { Order, Employee, ChecklistItems } from '@/lib/types';
-import { updateOrderStatus, updateOrderChecklist, updateOrderDescription } from '@/app/orders/actions';
+import type { Order, Employee, ChecklistItems, OrderStatus } from '@/lib/types';
+import { updateOrderStatus, updateOrderChecklist, updateOrderDescription } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -81,6 +82,7 @@ function DetailSection({
 
 export default function OrderDetails({ order, employees }: { order: Order, employees: Employee[] }) {
   const { toast } = useToast();
+  const router = useRouter();
   const { user } = useAuth();
   const [isUpdating, setIsUpdating] = React.useState(false);
   const [checklist, setChecklist] = React.useState<ChecklistItems>(order.checklist);
@@ -92,22 +94,24 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
     const updatedChecklist = { ...checklist, [item]: checked };
     setChecklist(updatedChecklist);
     
-    const result = await updateOrderChecklist(order.id, updatedChecklist, user);
-    if(result.message?.includes('sucesso')) {
-        toast({ title: 'Checklist Atualizado' });
-    } else {
-        toast({ variant: 'destructive', title: 'Erro', description: result.message });
+    try {
+      await updateOrderChecklist(order.id, updatedChecklist, user);
+      toast({ title: 'Checklist Atualizado' });
+      router.refresh();
+    } catch(error) {
+        toast({ variant: 'destructive', title: 'Erro', description: (error as Error).message });
     }
   };
 
   const handleSaveDescription = async () => {
     if (description === order.description || !user) return;
     setIsSavingDescription(true);
-    const result = await updateOrderDescription(order.id, description, user);
-    if(result.message?.includes('sucesso')) {
-        toast({ title: 'Observações Salvas' });
-    } else {
-        toast({ variant: 'destructive', title: 'Erro', description: result.message });
+    try {
+      await updateOrderDescription(order.id, description, user);
+      toast({ title: 'Observações Salvas' });
+      router.refresh();
+    } catch(error) {
+      toast({ variant: 'destructive', title: 'Erro', description: (error as Error).message });
     }
     setIsSavingDescription(false);
   };
@@ -123,14 +127,15 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
   };
 
 
-  const handleUpdateStatus = async (status: 'Em Andamento' | 'Concluída') => {
+  const handleUpdateStatus = async (status: OrderStatus) => {
     if (!user) return;
     setIsUpdating(true);
-    const result = await updateOrderStatus(order.id, status, user);
-    if(result.message?.includes('sucesso')) {
-        toast({ title: 'Status Atualizado', description: `Ordem agora está "${status}".`});
-    } else {
-        toast({ variant: 'destructive', title: 'Erro', description: result.message });
+    try {
+      await updateOrderStatus(order.id, status, user.name);
+      toast({ title: 'Status Atualizado', description: `Ordem agora está "${status}".`});
+      router.refresh();
+    } catch(error) {
+        toast({ variant: 'destructive', title: 'Erro', description: (error as Error).message });
     }
     setIsUpdating(false);
   };

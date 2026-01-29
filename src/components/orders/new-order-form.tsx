@@ -14,7 +14,8 @@ import {
 import { useRouter } from 'next/navigation';
 import { useState, useTransition, type ReactNode } from 'react';
 
-import { createOrder, suggestTechnicianAction } from '@/app/orders/actions';
+import { suggestTechnicianAction } from '@/app/orders/actions';
+import { createOrder } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -28,7 +29,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import type { Employee } from '@/lib/types';
+import type { Employee, Order } from '@/lib/types';
 import { useAuth } from '../auth/auth-provider';
 
 const FormSchema = z.object({
@@ -144,33 +145,34 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
         return;
     }
     startTransition(async () => {
-      const formData = new FormData();
-      const finalData = { ...data };
-      if (finalData.assignedTo === 'none') {
-        finalData.assignedTo = '';
-      }
+       try {
+            const dataToSave: Omit<Order, 'id'| 'date' | 'status' | 'checklist'| 'updatedAt' | 'lastUpdatedBy'> = {
+                client: data.client,
+                document: data.document ?? '',
+                contact: data.contact ?? '',
+                city: data.city,
+                state: data.state,
+                orderNow: data.orderNow,
+                mobile: data.mobile,
+                ifoodIntegration: data.ifoodIntegration,
+                ifoodEmail: data.ifoodEmail ?? '',
+                ifoodPassword: data.ifoodPassword ?? '',
+                dll: data.dll ?? '',
+                remoteCode: data.remoteCode ?? '',
+                certificateFile: data.certificateFile instanceof File && data.certificateFile.size > 0 ? data.certificateFile.name : undefined,
+                assignedTo: data.assignedTo === 'none' ? '' : data.assignedTo ?? '',
+                service: data.service,
+                priority: data.priority,
+                description: data.description ?? '',
+            };
 
-      Object.entries(finalData).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          if (value instanceof File) {
-            formData.append(key, value, value.name);
-          } else {
-            formData.append(key, String(value));
-          }
-        }
-      });
+            await createOrder(dataToSave, user);
 
-      const result = await createOrder(formData, user);
-      if (result?.errors) {
-        toast({
-          variant: 'destructive',
-          title: 'Falha na Validação',
-          description: result.message || 'Verifique os dados e tente novamente.'
-        });
-      } else if (result?.message) {
-        toast({ variant: 'destructive', title: 'Erro', description: result.message });
-      } else {
-        toast({ title: 'Sucesso!', description: 'Nova ordem de serviço criada.' });
+            toast({ title: 'Sucesso!', description: 'Nova ordem de serviço criada.' });
+            router.push('/orders');
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Erro ao criar ordem de serviço.', description: (error as Error).message });
       }
     });
   };
