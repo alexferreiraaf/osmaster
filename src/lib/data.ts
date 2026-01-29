@@ -106,6 +106,12 @@ export async function createOrder(
             certificateFile: certificate.name,
             certificateUrl: downloadURL
           });
+        }).catch(downloadError => {
+            console.error("Failed to get download URL", downloadError);
+            updateDoc(newOrderRef, {
+                certificateFile: `(Falha ao obter URL) ${certificate.name}`,
+                description: `Falha ao obter URL de download: ${downloadError.message}\n\n${newOrder.description || ''}`
+            });
         });
       }).catch(error => {
         console.error("Upload failed", error);
