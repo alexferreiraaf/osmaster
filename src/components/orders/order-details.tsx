@@ -179,7 +179,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
             <h1 className="text-3xl font-black text-foreground">{order.id}</h1>
             <p className="text-muted-foreground font-medium flex items-center gap-1.5">
                 <Calendar size={14} /> 
-                {format(new Date(order.date), "dd 'de' MMMM, yyyy", { locale: ptBR, timeZone: 'UTC' })}
+                {order.date && order.date.toDate ? format(order.date.toDate(), "dd 'de' MMMM, yyyy", { locale: ptBR, timeZone: 'UTC' }) : 'Data inválida'}
             </p>
             <p className="text-primary font-bold mt-1">Status: {order.status}</p>
           </div>
@@ -358,7 +358,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                         </div>
                         <div className='flex items-center gap-1.5 mt-1'>
                           <Calendar size={14} className="text-muted-foreground" />
-                          <p>Em: {format(new Date(order.updatedAt), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</p>
+                          <p>Em: {order.updatedAt.toDate ? format(order.updatedAt.toDate(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR }) : ''}</p>
                         </div>
                       </div>
                     </DetailSection>
