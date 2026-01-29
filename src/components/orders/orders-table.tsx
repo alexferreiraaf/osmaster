@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { FileText, Trash2 } from 'lucide-react';
+import { FileText, MoreVertical, Trash2 } from 'lucide-react';
 import type { Order } from '@/lib/types';
 import {
   Table,
@@ -26,6 +26,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { deleteOrder } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 
 export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[]; onOrderDeleted: (id: string) => void }) {
   const router = useRouter();
@@ -58,83 +60,106 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>OS / Cliente</TableHead>
-          <TableHead>Atribuído a</TableHead>
-          <TableHead>Cidade/Estado</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead className="text-right">Ações</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {orders.map((order) => (
-          <TableRow
-            key={order.id}
-            className="hover:bg-muted/50 transition-colors"
-          >
-            <TableCell
-              onClick={() => router.push(`/orders/${order.id}`)}
-              className="cursor-pointer"
-            >
-              <div className="font-bold text-primary">{order.id}</div>
-              <div className="text-sm font-medium text-foreground">
-                {order.client}
-              </div>
-            </TableCell>
-            <TableCell>{order.assignedTo || 'Pendente'}</TableCell>
-            <TableCell>
-              {order.city} - {order.state}
-            </TableCell>
-            <TableCell>
-              <StatusBadge status={order.status} />
-            </TableCell>
-            <TableCell className="text-right">
-              <div className="flex space-x-1 justify-end">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => router.push(`/orders/${order.id}`)}
-                  aria-label="Ver detalhes"
+    <>
+        {/* Mobile View - Cards */}
+        <div className="md:hidden space-y-3">
+             {orders.map((order) => (
+                <Card key={order.id} onClick={() => router.push(`/orders/${order.id}`)} className="cursor-pointer">
+                    <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
+                    <div className="space-y-1">
+                        <CardTitle className="text-sm font-bold text-primary">OS: {order.id}</CardTitle>
+                        <p className="text-base font-semibold">{order.client}</p>
+                    </div>
+                    <StatusBadge status={order.status} />
+                    </CardHeader>
+                    <CardContent className="text-sm text-muted-foreground">
+                    <p>{order.service}</p>
+                    <p>Atribuído a: {order.assignedTo || 'Pendente'}</p>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+
+        {/* Desktop View - Table */}
+        <div className="hidden md:block">
+            <Table>
+            <TableHeader>
+                <TableRow>
+                <TableHead>OS / Cliente</TableHead>
+                <TableHead>Atribuído a</TableHead>
+                <TableHead>Cidade/Estado</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {orders.map((order) => (
+                <TableRow
+                    key={order.id}
+                    className="hover:bg-muted/50 transition-colors"
                 >
-                  <FileText size={18} />
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-destructive hover:text-destructive"
-                      aria-label="Deletar"
+                    <TableCell
+                    onClick={() => router.push(`/orders/${order.id}`)}
+                    className="cursor-pointer"
                     >
-                      <Trash2 size={18} />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Esta ação não pode ser desfeita. Isso irá deletar
-                        permanentemente a ordem de serviço {order.id}.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleDelete(order.id)}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      >
-                        Deletar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                    <div className="font-bold text-primary">{order.id}</div>
+                    <div className="text-sm font-medium text-foreground">
+                        {order.client}
+                    </div>
+                    </TableCell>
+                    <TableCell>{order.assignedTo || 'Pendente'}</TableCell>
+                    <TableCell>
+                    {order.city} - {order.state}
+                    </TableCell>
+                    <TableCell>
+                    <StatusBadge status={order.status} />
+                    </TableCell>
+                    <TableCell className="text-right">
+                         <AlertDialog>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                        <MoreVertical size={18} />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onSelect={() => router.push(`/orders/${order.id}`)}>
+                                        <FileText className="mr-2 h-4 w-4" />
+                                        Ver Detalhes
+                                    </DropdownMenuItem>
+                                    <AlertDialogTrigger asChild>
+                                        <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={(e) => e.preventDefault()}>
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Deletar
+                                        </DropdownMenuItem>
+                                    </AlertDialogTrigger>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Esta ação não pode ser desfeita. Isso irá deletar
+                                    permanentemente a ordem de serviço {order.id}.
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={() => handleDelete(order.id)}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                    Deletar
+                                </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </TableCell>
+                </TableRow>
+                ))}
+            </TableBody>
+            </Table>
+        </div>
+    </>
   );
 }

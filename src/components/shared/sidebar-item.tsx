@@ -21,10 +21,12 @@ export function SidebarItem({
   href,
   icon,
   label,
+  layout = 'default'
 }: {
   href: string;
   icon: IconType;
   label: string;
+  layout?: 'default' | 'bottom-nav';
 }) {
   const pathname = usePathname();
   let isActive = false;
@@ -33,6 +35,24 @@ export function SidebarItem({
     isActive = pathname.startsWith('/orders') && !pathname.startsWith('/orders/new');
   } else {
     isActive = pathname.startsWith(href);
+  }
+
+  if (layout === 'bottom-nav') {
+      return (
+          <Button
+            asChild
+            variant='ghost'
+            className={cn(
+                'flex-col h-auto p-2 space-y-1 flex-1',
+                isActive ? 'text-primary bg-primary/10' : 'text-slate-500'
+            )}
+            >
+            <Link href={href}>
+                {iconMap[icon]}
+                <span className="text-xs">{label}</span>
+            </Link>
+            </Button>
+      )
   }
 
 
