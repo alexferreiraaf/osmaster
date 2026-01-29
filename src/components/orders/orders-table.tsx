@@ -61,19 +61,36 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
     )
   }
 
-  const priorityBorderColors: Record<Priority, string> = {
-    'Urgente': 'border-l-rose-500',
-    'Alta': 'border-l-amber-500',
-    'Média': 'border-l-sky-500',
-    'Baixa': 'border-l-slate-300',
+  const priorityStyles: Record<Priority, { card: string; row: string }> = {
+    'Urgente': {
+      card: 'bg-rose-50 dark:bg-rose-500/10',
+      row: 'border-l-rose-500',
+    },
+    'Alta': {
+      card: 'bg-amber-50 dark:bg-amber-500/10',
+      row: 'border-l-amber-500',
+    },
+    'Média': {
+      card: 'bg-sky-50 dark:bg-sky-500/10',
+      row: 'border-l-sky-500',
+    },
+    'Baixa': {
+      card: 'bg-slate-50 dark:bg-slate-500/10',
+      row: 'border-l-slate-300',
+    },
   };
+
 
   return (
     <>
         {/* Mobile View - Cards */}
         <div className="md:hidden space-y-3">
              {orders.map((order) => (
-                <Card key={order.id} onClick={() => router.push(`/orders/${order.id}`)} className={cn("cursor-pointer border-l-4", priorityBorderColors[order.priority])}>
+                <Card 
+                  key={order.id} 
+                  onClick={() => router.push(`/orders/${order.id}`)} 
+                  className={cn("cursor-pointer", priorityStyles[order.priority].card)}
+                >
                     <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
                     <div className="space-y-1">
                         <CardTitle className="text-sm font-bold text-primary">OS: {order.id}</CardTitle>
@@ -109,7 +126,7 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                 {orders.map((order) => (
                 <TableRow
                     key={order.id}
-                    className={cn("transition-colors border-l-4 hover:bg-muted/50", priorityBorderColors[order.priority])}
+                    className={cn("transition-colors border-l-4 hover:bg-muted/50", priorityStyles[order.priority].row)}
                 >
                     <TableCell
                     onClick={() => router.push(`/orders/${order.id}`)}
