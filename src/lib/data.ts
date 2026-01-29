@@ -12,7 +12,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { db } from '@/firebase';
-import type { Order, Employee, OrderStatus, ChecklistItems } from './types';
+import type { Order, Employee, OrderStatus, ChecklistItems, User } from './types';
 
 // Simulate API latency
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
@@ -52,8 +52,8 @@ export async function getOrderById(id: string): Promise<Order | undefined> {
 }
 
 export async function createOrder(
-  orderData: Omit<Order, 'id' | 'date' | 'status' | 'checklist' | 'updatedAt'>,
-  user: { name: string }
+  orderData: Omit<Order, 'id' | 'date' | 'status' | 'checklist' | 'updatedAt' | 'lastUpdatedBy'>,
+  user: User
 ): Promise<Order> {
     const newOrderRef = doc(collection(db, "orders"));
     const newOrder: Order = {
