@@ -70,17 +70,6 @@ export async function createOrder(
     const newOrderId = (maxId + 1).toString();
     const newOrderRef = doc(db, "orders", newOrderId);
 
-    let certificateFile = '';
-    let certificateUrl = '';
-
-    if (certificate) {
-      const storage = getStorage(app);
-      const storageRef = ref(storage, `certificates/${newOrderId}/${certificate.name}`);
-      await uploadBytes(storageRef, certificate);
-      certificateUrl = await getDownloadURL(storageRef);
-      certificateFile = certificate.name;
-    }
-
     const newOrder: Order = {
         ...orderData,
         id: newOrderId,
@@ -97,13 +86,40 @@ export async function createOrder(
         },
         lastUpdatedBy: user.name,
         updatedAt: new Date().toISOString(),
-        certificateFile,
-        certificateUrl,
+        certificateFile: certificate ? `(Enviando...) ${certificate.name}` : '',
+        certificateUrl: '',
     };
 
+    // Save the document immediately, so the user gets instant feedback
     await setDoc(newOrderRef, newOrder);
+
+    // If there's a certificate, upload it in the background and update the doc when done.
+    // This part is "fire and forget" from the user's perspective.
+    if (certificate) {
+      const storage = getStorage(app);
+      const storageRef = ref(storage, `certificates/${newOrderId}/${certificate.name}`);
+      
+      uploadBytes(storageRef, certificate).then(snapshot => {
+        getDownloadURL(snapshot.ref).then(downloadURL => {
+          // Now update the document with the real file name and URL
+          updateDoc(newOrderRef, {
+            certificateFile: certificate.name,
+            certificateUrl: downloadURL
+          });
+        });
+      }).catch(error => {
+        console.error("Upload failed", error);
+        // Optionally, update the document to show that the upload failed
+        updateDoc(newOrderRef, {
+            certificateFile: `(Falha no envio) ${certificate.name}`
+        });
+      });
+    }
+
+    // Return the optimistically created order.
     return newOrder;
 }
+
 
 export async function updateOrderStatus(
   id: string,
