@@ -53,12 +53,13 @@
         "remoteCode": {
           "type": "string"
         },
-        "certificateFile": {
-          "type": "string"
-        },
-        "certificateUrl": {
+        "certificateFileName": {
           "type": "string",
-          "description": "Download URL for the digital certificate."
+          "description": "The name of the uploaded digital certificate file."
+        },
+        "certificateDataUrl": {
+          "type": "string",
+          "description": "The Base64 encoded content of the digital certificate."
         },
         "assignedTo": {
           "type": "string",

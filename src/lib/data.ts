@@ -11,12 +11,20 @@ import {
   serverTimestamp,
   updateDoc,
 } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, app } from '@/firebase';
+import { db } from '@/firebase';
 import type { Order, Employee, OrderStatus, ChecklistItems, User } from './types';
 
 // Simulate API latency
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+const fileToDataUrl = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+  });
+};
 
 export async function getOrders(searchTerm?: string): Promise<Order[]> {
   const ordersRef = collection(db, 'orders');
@@ -53,7 +61,7 @@ export async function getOrderById(id: string): Promise<Order | undefined> {
 }
 
 export async function createOrder(
-  orderData: Omit<Order, 'id' | 'date' | 'status' | 'checklist' | 'updatedAt' | 'lastUpdatedBy' | 'certificateFile' | 'certificateUrl'>,
+  orderData: Omit<Order, 'id' | 'date' | 'status' | 'checklist' | 'updatedAt' | 'lastUpdatedBy' | 'certificateFileName' | 'certificateDataUrl'>,
   user: User,
   certificate?: File
 ): Promise<Order> {
@@ -70,11 +78,22 @@ export async function createOrder(
     const newOrderId = (maxId + 1).toString();
     const newOrderRef = doc(db, "orders", newOrderId);
 
+    let certificateDataUrl: string | undefined = undefined;
+    if (certificate) {
+        try {
+            certificateDataUrl = await fileToDataUrl(certificate);
+        } catch (error) {
+            console.error("Error converting file to data URL", error);
+        }
+    }
+
     const newOrder: Order = {
         ...orderData,
         id: newOrderId,
         date: new Date().toISOString(),
         status: 'Pendente',
+        certificateFileName: certificate?.name || '',
+        certificateDataUrl: certificateDataUrl || '',
         checklist: {
             importacaoProdutos: false,
             adicionaisOpcionais: false,
@@ -86,46 +105,10 @@ export async function createOrder(
         },
         lastUpdatedBy: user.name,
         updatedAt: new Date().toISOString(),
-        certificateFile: certificate ? `(Enviando...) ${certificate.name}` : '',
-        certificateUrl: '',
     };
 
-    // Save the document immediately, so the user gets instant feedback
     await setDoc(newOrderRef, newOrder);
-
-    // If there's a certificate, upload it in the background and update the doc when done.
-    // This part is "fire and forget" from the user's perspective.
-    if (certificate) {
-      const storage = getStorage(app);
-      const storageRef = ref(storage, `certificates/${newOrderId}/${certificate.name}`);
-      
-      uploadBytes(storageRef, certificate).then(snapshot => {
-        getDownloadURL(snapshot.ref).then(downloadURL => {
-          // Now update the document with the real file name and URL
-          updateDoc(newOrderRef, {
-            certificateFile: certificate.name,
-            certificateUrl: downloadURL
-          });
-        }).catch(downloadError => {
-            console.error("Failed to get download URL", downloadError);
-            updateDoc(newOrderRef, {
-                certificateFile: `(Falha ao obter URL) ${certificate.name}`,
-                description: `Falha ao obter URL de download: ${downloadError.message}\n\n${newOrder.description || ''}`
-            });
-        });
-      }).catch(error => {
-        console.error("Upload failed", error);
-        // Update the document to show that the upload failed, including the error message.
-        updateDoc(newOrderRef, {
-            certificateFile: `(Falha no envio) ${certificate.name}`,
-            description: `Falha no upload do certificado: ${error.message}\n\n${newOrder.description || ''}`
-        }).catch(updateError => {
-            console.error("Failed to update order with upload failure message:", updateError);
-        });
-      });
-    }
-
-    // Return the optimistically created order.
+    
     return newOrder;
 }
 

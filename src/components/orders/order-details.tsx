@@ -222,11 +222,11 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase">Certificado Digital</p>
-                                <p className="text-sm font-bold">{order.certificateFile || 'Nenhum arquivo enviado'}</p>
+                                <p className="text-sm font-bold">{order.certificateFileName || 'Nenhum arquivo enviado'}</p>
                             </div>
-                            {order.certificateUrl && (
+                            {order.certificateDataUrl && (
                                 <Button asChild variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-                                    <a href={order.certificateUrl} target="_blank" rel="noopener noreferrer" download={order.certificateFile}>
+                                    <a href={order.certificateDataUrl} download={order.certificateFileName}>
                                         <Download size={16} />
                                     </a>
                                 </Button>

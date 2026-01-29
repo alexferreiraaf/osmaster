@@ -25,8 +25,8 @@ export interface Order {
   ifoodPassword?: string;
   dll: string;
   remoteCode: string;
-  certificateFile?: string;
-  certificateUrl?: string;
+  certificateFileName?: string;
+  certificateDataUrl?: string;
   assignedTo: string;
   service: string;
   status: OrderStatus;
