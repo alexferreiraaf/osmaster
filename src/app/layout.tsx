@@ -25,10 +25,10 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <AuthProvider>
-          <AppShell>{children}</AppShell>
-        </AuthProvider>
-        <Toaster />
+          <AuthProvider>
+            <AppShell>{children}</AppShell>
+          </AuthProvider>
+          <Toaster />
       </body>
     </html>
   );
