@@ -75,8 +75,8 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
       row: 'border-l-sky-500',
     },
     'Baixa': {
-      card: 'bg-slate-50 dark:bg-slate-500/10',
-      row: 'border-l-slate-300',
+      card: 'bg-emerald-50 dark:bg-emerald-500/10',
+      row: 'border-l-emerald-500',
     },
   };
 
