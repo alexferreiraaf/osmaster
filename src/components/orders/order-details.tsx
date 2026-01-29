@@ -226,7 +226,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                             </div>
                             {order.certificateUrl && (
                                 <Button asChild variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-                                    <a href={order.certificateUrl} target="_blank" rel="noopener noreferrer" download>
+                                    <a href={order.certificateUrl} target="_blank" rel="noopener noreferrer" download={order.certificateFile}>
                                         <Download size={16} />
                                     </a>
                                 </Button>
