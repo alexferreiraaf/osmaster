@@ -16,9 +16,9 @@ export default function StatusBadge({ status, className }: StatusBadgeProps) {
       className={cn(
         `px-2.5 py-1 text-xs font-bold rounded-full capitalize`,
         {
-          'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100': status === 'Concluída',
-          'bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-100': status === 'Em Andamento',
-          'bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-100': status === 'Pendente',
+          'bg-emerald-200 text-emerald-800 border-emerald-300 hover:bg-emerald-200': status === 'Concluída',
+          'bg-amber-200 text-amber-800 border-amber-300 hover:bg-amber-200': status === 'Em Andamento',
+          'bg-rose-200 text-rose-800 border-rose-300 hover:bg-rose-200': status === 'Pendente',
         },
         className
       )}

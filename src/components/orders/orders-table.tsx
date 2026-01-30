@@ -70,10 +70,10 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                   key={order.id} 
                   onClick={() => router.push(`/orders/${order.id}`)} 
                   className={cn("cursor-pointer", {
-                    'bg-rose-50 dark:bg-rose-500/10': order.priority === 'Urgente',
-                    'bg-amber-50 dark:bg-amber-500/10': order.priority === 'Alta',
-                    'bg-sky-50 dark:bg-sky-500/10': order.priority === 'Média',
-                    'bg-emerald-50 dark:bg-emerald-500/10': order.priority === 'Baixa',
+                    'bg-rose-100 dark:bg-rose-500/20': order.priority === 'Urgente',
+                    'bg-amber-100 dark:bg-amber-500/20': order.priority === 'Alta',
+                    'bg-sky-100 dark:bg-sky-500/20': order.priority === 'Média',
+                    'bg-emerald-100 dark:bg-emerald-500/20': order.priority === 'Baixa',
                   })}
                 >
                     <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
@@ -112,10 +112,10 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                 <TableRow
                     key={order.id}
                     className={cn("transition-colors border-l-4 hover:bg-muted/50", {
-                      'border-l-rose-500': order.priority === 'Urgente',
-                      'border-l-amber-500': order.priority === 'Alta',
-                      'border-l-sky-500': order.priority === 'Média',
-                      'border-l-emerald-500': order.priority === 'Baixa',
+                      'border-l-rose-600': order.priority === 'Urgente',
+                      'border-l-amber-600': order.priority === 'Alta',
+                      'border-l-sky-600': order.priority === 'Média',
+                      'border-l-emerald-600': order.priority === 'Baixa',
                     })}
                 >
                     <TableCell

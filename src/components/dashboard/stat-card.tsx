@@ -20,10 +20,10 @@ const iconMap: Record<IconType, ReactNode> = {
 };
 
 const colorMap: Record<IconType, string> = {
-  total: 'bg-blue-500',
-  ongoing: 'bg-amber-500',
-  completed: 'bg-emerald-500',
-  pending: 'bg-rose-500',
+  total: 'bg-blue-600',
+  ongoing: 'bg-amber-600',
+  completed: 'bg-emerald-600',
+  pending: 'bg-rose-600',
 };
 
 interface StatCardProps {

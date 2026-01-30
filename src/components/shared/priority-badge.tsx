@@ -16,10 +16,10 @@ export default function PriorityBadge({ priority, className }: PriorityBadgeProp
       className={cn(
         `px-2.5 py-1 text-xs font-bold rounded-full capitalize`,
         {
-          'bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-100': priority === 'Urgente',
-          'bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-100': priority === 'Alta',
-          'bg-sky-100 text-sky-700 border-sky-200 hover:bg-sky-100': priority === 'Média',
-          'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100': priority === 'Baixa',
+          'bg-rose-200 text-rose-800 border-rose-300 hover:bg-rose-200': priority === 'Urgente',
+          'bg-amber-200 text-amber-800 border-amber-300 hover:bg-amber-200': priority === 'Alta',
+          'bg-sky-200 text-sky-800 border-sky-300 hover:bg-sky-200': priority === 'Média',
+          'bg-emerald-200 text-emerald-800 border-emerald-300 hover:bg-emerald-200': priority === 'Baixa',
         },
         className
       )}
