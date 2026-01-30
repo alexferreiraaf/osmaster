@@ -70,10 +70,10 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                   key={order.id} 
                   onClick={() => router.push(`/orders/${order.id}`)} 
                   className={cn("cursor-pointer", {
-                    'bg-rose-100 dark:bg-rose-500/20': order.priority === 'Urgente',
-                    'bg-amber-100 dark:bg-amber-500/20': order.priority === 'Alta',
-                    'bg-sky-100 dark:bg-sky-500/20': order.priority === 'Média',
-                    'bg-emerald-100 dark:bg-emerald-500/20': order.priority === 'Baixa',
+                    'bg-rose-600/20 dark:bg-rose-500/20': order.priority === 'Urgente',
+                    'bg-amber-600/20 dark:bg-amber-500/20': order.priority === 'Alta',
+                    'bg-sky-600/20 dark:bg-sky-500/20': order.priority === 'Média',
+                    'bg-emerald-600/20 dark:bg-emerald-500/20': order.priority === 'Baixa',
                   })}
                 >
                     <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
@@ -111,11 +111,11 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                 {orders.map((order) => (
                 <TableRow
                     key={order.id}
-                    className={cn("transition-colors border-l-4 hover:bg-muted/50", {
-                      'border-l-rose-600': order.priority === 'Urgente',
-                      'border-l-amber-600': order.priority === 'Alta',
-                      'border-l-sky-600': order.priority === 'Média',
-                      'border-l-emerald-600': order.priority === 'Baixa',
+                    className={cn("transition-colors", {
+                      'bg-rose-600/20 hover:bg-rose-600/30 dark:bg-rose-500/20 dark:hover:bg-rose-500/30': order.priority === 'Urgente',
+                      'bg-amber-600/20 hover:bg-amber-600/30 dark:bg-amber-500/20 dark:hover:bg-amber-500/30': order.priority === 'Alta',
+                      'bg-sky-600/20 hover:bg-sky-600/30 dark:bg-sky-500/20 dark:hover:bg-sky-500/30': order.priority === 'Média',
+                      'bg-emerald-600/20 hover:bg-emerald-600/30 dark:bg-emerald-500/20 dark:hover:bg-emerald-500/30': order.priority === 'Baixa',
                     })}
                 >
                     <TableCell
