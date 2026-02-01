@@ -1,41 +1,59 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { NewOrderForm } from '@/components/orders/new-order-form';
-import { getEmployees } from '@/lib/data';
-import type { Employee } from '@/lib/types';
-import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { UserPlus, ShoppingCart, FileCog } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-export default function NewOrderPage() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState(true);
+const options = [
+  {
+    title: 'Cliente Novo',
+    description: 'Criar uma OS completa para um novo cliente ou serviço.',
+    href: '/orders/new/client',
+    icon: <UserPlus className="h-8 w-8 text-primary" />,
+    bgColor: 'bg-blue-600/10 dark:bg-blue-900/20',
+    borderColor: 'border-blue-500/20 dark:border-blue-700/50',
+  },
+  {
+    title: 'Pedido Agora',
+    description: 'Registrar um pedido do tipo "Pedido Agora".',
+    href: '/orders/new/order-now',
+    icon: <ShoppingCart className="h-8 w-8 text-emerald-600 dark:text-emerald-500" />,
+    bgColor: 'bg-emerald-600/10 dark:bg-emerald-900/20',
+    borderColor: 'border-emerald-500/20 dark:border-emerald-700/50',
+  },
+  {
+    title: 'Configuração Fiscal',
+    description: 'Abrir uma OS para configuração fiscal.',
+    href: '/orders/new/fiscal',
+    icon: <FileCog className="h-8 w-8 text-amber-600 dark:text-amber-500" />,
+    bgColor: 'bg-amber-600/10 dark:bg-amber-900/20',
+    borderColor: 'border-amber-500/20 dark:border-amber-700/50',
+  },
+];
 
-  useEffect(() => {
-      async function fetchEmployees() {
-          setLoading(true);
-          const employeesData = await getEmployees();
-          setEmployees(employeesData);
-          setLoading(false);
-      }
-      fetchEmployees();
-  }, []);
-
-  if (loading) {
-      return (
-          <div className="bg-card max-w-5xl mx-auto p-6 sm:p-8 rounded-2xl shadow-sm border space-y-8">
-              <Skeleton className="h-10 w-1/3" />
-              <Skeleton className="h-24 w-full" />
-              <Skeleton className="h-10 w-1/3" />
-              <Skeleton className="h-24 w-full" />
-              <Skeleton className="h-10 w-1/3" />
-              <Skeleton className="h-24 w-full" />
-          </div>
-      );
-  }
-
+export default function NewOrderSelectionPage() {
   return (
-    <div className="bg-card max-w-5xl mx-auto p-6 sm:p-8 rounded-2xl shadow-sm border">
-        <NewOrderForm employees={employees} />
+    <div className="max-w-4xl mx-auto">
+      <div className="text-center mb-10">
+        <h1 className="text-3xl font-bold tracking-tight">Criar Nova Ordem de Serviço</h1>
+        <p className="text-muted-foreground mt-2">Selecione o tipo de ordem de serviço que você deseja criar.</p>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {options.map((option) => (
+          <Link href={option.href} key={option.title} className="block hover:scale-105 transition-transform duration-200">
+            <Card className={cn("h-full flex flex-col text-center items-center justify-center p-6 border-2", option.bgColor, option.borderColor)}>
+              <CardHeader className="p-0 items-center">
+                <div className="mb-4">{option.icon}</div>
+                <CardTitle>{option.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 mt-2">
+                <p className="text-sm text-muted-foreground">{option.description}</p>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
