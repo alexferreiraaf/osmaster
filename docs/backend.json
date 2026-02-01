@@ -46,6 +46,11 @@
         "dll": {
           "type": "string"
         },
+        "remoteTool": {
+          "type": "string",
+          "enum": ["AnyDesk", "TeamViewer", "Nenhum"],
+          "description": "The remote access tool used."
+        },
         "remoteCode": {
           "type": "string"
         },

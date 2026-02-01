@@ -24,6 +24,7 @@ export interface Order {
   ifoodEmail?: string;
   ifoodPassword?: string;
   dll: string;
+  remoteTool?: 'AnyDesk' | 'TeamViewer' | 'Nenhum';
   remoteCode: string;
   certificateFileName?: string;
   certificateDataUrl?: string;

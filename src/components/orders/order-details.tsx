@@ -260,12 +260,14 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                     <div className="bg-secondary/50 p-4 rounded-xl grid grid-cols-1 gap-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase">AnyDesk/TV</p>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase">{order.remoteTool && order.remoteTool !== 'Nenhum' ? order.remoteTool : 'Acesso Remoto'}</p>
                                 <p className="text-sm font-bold">{order.remoteCode || '---'}</p>
                             </div>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => copyToClipboard(order.remoteCode, 'Acesso Remoto')}>
-                                <Copy size={16} />
-                            </Button>
+                            {order.remoteCode && (
+                                <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => copyToClipboard(order.remoteCode, order.remoteTool || 'Acesso Remoto')}>
+                                    <Copy size={16} />
+                                </Button>
+                            )}
                         </div>
                         <div className="flex items-center justify-between">
                             <div>

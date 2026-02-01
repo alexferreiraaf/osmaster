@@ -12,7 +12,7 @@ import {
   Wand2,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, useTransition, type ReactNode } from 'react';
+import { useState, useTransition, type ReactNode, useEffect } from 'react';
 
 import { suggestTechnicianAction } from '@/app/orders/actions';
 import { createOrder } from '@/lib/data';
@@ -31,6 +31,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import type { Employee, Order } from '@/lib/types';
 import { useAuth } from '../auth/auth-provider';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const FormSchema = z.object({
   client: z.string().min(1, 'Nome do cliente é obrigatório.'),
@@ -45,6 +46,7 @@ const FormSchema = z.object({
   ifoodEmail: z.string().optional(),
   ifoodPassword: z.string().optional(),
   dll: z.string().optional(),
+  remoteTool: z.enum(['AnyDesk', 'TeamViewer', 'Nenhum']).optional(),
   remoteCode: z.string().optional(),
   certificateFile: z.any().optional(),
   imageFile: z.any().optional(),
@@ -96,10 +98,18 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
       ifoodIntegration: 'Não',
       priority: 'Média',
       assignedTo: 'none',
+      remoteTool: 'Nenhum',
     },
   });
 
   const ifoodIntegration = watch('ifoodIntegration');
+  const remoteTool = watch('remoteTool');
+
+  useEffect(() => {
+    if (remoteTool === 'Nenhum') {
+      setValue('remoteCode', '');
+    }
+  }, [remoteTool, setValue]);
 
   const handleSuggestTechnician = async () => {
     const { service, city, state } = getValues();
@@ -283,8 +293,8 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
       </FormSection>
 
       <FormSection title="Dados Técnicos e Acesso" icon="shield">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-          <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+          <div className="md:col-span-2">
             <Label htmlFor="dll">DLL</Label>
             <Controller
               name="dll"
@@ -301,7 +311,39 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
               )}
             />
           </div>
-          <div><Label htmlFor="remoteCode">AnyDesk / TeamViewer</Label><Input id="remoteCode" {...register('remoteCode')} /></div>
+          <div className="md:col-span-2 space-y-2">
+            <Label>Acesso Remoto</Label>
+            <Controller
+              name="remoteTool"
+              control={control}
+              render={({ field }) => (
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  value={field.value ?? 'Nenhum'}
+                  className="flex items-center gap-4"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="AnyDesk" id="r_anydesk" />
+                    <Label htmlFor="r_anydesk" className="font-normal">AnyDesk</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="TeamViewer" id="r_teamviewer" />
+                    <Label htmlFor="r_teamviewer" className="font-normal">TeamViewer</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="Nenhum" id="r_none" />
+                      <Label htmlFor="r_none" className="font-normal">Nenhum</Label>
+                  </div>
+                </RadioGroup>
+              )}
+            />
+            <Input
+              id="remoteCode"
+              {...register('remoteCode')}
+              placeholder="Código de acesso..."
+              disabled={remoteTool === 'Nenhum' || !remoteTool}
+            />
+          </div>
           <div>
             <Label htmlFor="certificateFile">Certificado Digital (.pfx)</Label>
             <Input id="certificateFile" type="file" accept=".pfx" {...register('certificateFile')} className="pt-2"/>
