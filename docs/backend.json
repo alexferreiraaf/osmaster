@@ -106,11 +106,13 @@
           }
         },
         "lastUpdatedBy": {
-          "type": "string"
+          "type": "string",
+          "description": "Name of the user who last updated the order."
         },
         "updatedAt": {
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "description": "Timestamp of the last update."
         }
       },
       "required": ["client", "city", "state", "service", "status", "date", "priority"]

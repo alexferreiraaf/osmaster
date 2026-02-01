@@ -144,6 +144,34 @@ export async function createOrder(
     await setDoc(newOrderRef, newOrderData);
 }
 
+export async function updateOrder(
+  id: string,
+  orderData: Omit<Order, 'id' | 'date' | 'status' | 'checklist' | 'updatedAt' | 'lastUpdatedBy' | 'certificateFileName' | 'certificateDataUrl' | 'imageFileName' | 'imageDataUrl'>,
+  user: User,
+  certificate?: File,
+  image?: File
+): Promise<void> {
+    const orderRef = doc(db, "orders", id);
+
+    const dataToUpdate: any = {
+        ...orderData,
+        lastUpdatedBy: user.name,
+        updatedAt: serverTimestamp(),
+    };
+
+    if (certificate) {
+        dataToUpdate.certificateDataUrl = await fileToDataUrl(certificate);
+        dataToUpdate.certificateFileName = certificate.name;
+    }
+
+    if (image) {
+        dataToUpdate.imageDataUrl = await fileToDataUrl(image);
+        dataToUpdate.imageFileName = image.name;
+    }
+
+    await updateDoc(orderRef, dataToUpdate);
+}
+
 
 export async function updateOrderStatus(
   id: string,

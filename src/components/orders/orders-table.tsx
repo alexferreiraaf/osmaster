@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { FileText, MoreVertical, Trash2 } from 'lucide-react';
+import { FileText, MoreVertical, Trash2, Pencil } from 'lucide-react';
 import type { Order, Priority } from '@/lib/types';
 import {
   Table,
@@ -149,6 +149,10 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                                     <DropdownMenuItem onSelect={() => router.push(`/orders/${order.id}`)}>
                                         <FileText className="mr-2 h-4 w-4" />
                                         Ver Detalhes
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => router.push(`/orders/${order.id}/edit`)}>
+                                        <Pencil className="mr-2 h-4 w-4" />
+                                        Editar
                                     </DropdownMenuItem>
                                     <AlertDialogTrigger asChild>
                                         <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={(e) => e.preventDefault()}>

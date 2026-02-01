@@ -6,6 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getPageTitle(pathname: string) {
+  if (pathname.endsWith('/edit')) return 'Editar Ordem de Serviço';
   if (pathname.startsWith('/orders/new')) return 'Nova Ordem de Serviço';
   if (pathname.startsWith('/settings')) return 'Configurações';
   if (pathname.startsWith('/orders/')) return 'Detalhes da OS';
