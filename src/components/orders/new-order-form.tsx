@@ -432,4 +432,3 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
       </div>
     </form>
   );
-}
