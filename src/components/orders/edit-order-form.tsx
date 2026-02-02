@@ -189,6 +189,26 @@ export function EditOrderForm({ employees, order }: { employees: Employee[], ord
       .slice(0, 15);
   };
 
+  const cpfCnpjMask = (value: string) => {
+    if (!value) return '';
+    const onlyDigits = value.replace(/\D/g, '');
+    
+    if (onlyDigits.length <= 11) {
+      return onlyDigits
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+        .slice(0, 14);
+    } else {
+      return onlyDigits
+        .replace(/(\d{2})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1/$2')
+        .replace(/(\d{4})(\d{1,2})$/, '$1-$2')
+        .slice(0, 18);
+    }
+  };
+
   const dllMask = (value: string) => {
     if (!value) return '';
     return value.replace(/[^0-9a-fA-F]/g, '').slice(0, 128);
@@ -203,7 +223,21 @@ export function EditOrderForm({ employees, order }: { employees: Employee[], ord
             <Input id="client" {...register('client')} />
             {errors.client && <p className="text-destructive text-xs mt-1">{errors.client.message}</p>}
           </div>
-          <div><Label htmlFor="document">CPF/CNPJ</Label><Input id="document" {...register('document')} /></div>
+          <div>
+            <Label htmlFor="document">CPF/CNPJ</Label>
+            <Controller
+              name="document"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  id="document"
+                  onChange={(e) => field.onChange(cpfCnpjMask(e.target.value))}
+                  value={field.value ?? ''}
+                />
+              )}
+            />
+          </div>
           <div>
             <Label htmlFor="contact">Telefone</Label>
             <Controller
