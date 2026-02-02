@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getOrders } from '@/lib/data';
 import OrdersTable from '@/components/orders/orders-table';
@@ -13,20 +13,19 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const query = searchParams.get('q') || '';
 
-  useEffect(() => {
-    async function fetchOrders() {
-      setLoading(true);
-      const fetchedOrders = await getOrders(query);
-      setOrders(fetchedOrders);
-      setLoading(false);
-    }
-    fetchOrders();
+  const fetchOrders = useCallback(async () => {
+    setLoading(true);
+    const fetchedOrders = await getOrders(query);
+    setOrders(fetchedOrders);
+    setLoading(false);
   }, [query]);
 
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
   const handleOrderDeleted = (deletedOrderId: string) => {
-    setOrders((currentOrders) =>
-      currentOrders.filter((order) => order.id !== deletedOrderId)
-    );
+    fetchOrders();
   };
 
   if (loading) {
