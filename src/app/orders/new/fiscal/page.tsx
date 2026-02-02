@@ -1,28 +1,41 @@
 'use client';
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { FiscalConfigForm } from '@/components/orders/fiscal-config-form';
+import { getEmployees } from '@/lib/data';
+import type { Employee } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function FiscalConfigPage() {
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+      async function fetchEmployees() {
+          setLoading(true);
+          const employeesData = await getEmployees();
+          setEmployees(employeesData);
+          setLoading(false);
+      }
+      fetchEmployees();
+  }, []);
+
+  if (loading) {
+      return (
+          <div className="bg-card max-w-5xl mx-auto p-6 sm:p-8 rounded-2xl shadow-sm border space-y-8">
+              <Skeleton className="h-10 w-1/3" />
+              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-10 w-1/3" />
+              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-10 w-1/3" />
+              <Skeleton className="h-24 w-full" />
+          </div>
+      );
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center text-center h-full">
-      <Card className="max-w-lg">
-        <CardHeader>
-          <CardTitle>OS para "Configuração Fiscal"</CardTitle>
-          <CardDescription>
-            Este formulário ainda está em construção.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground mb-4">
-            Aqui você poderá criar uma Ordem de Serviço específica para configurações fiscais.
-          </p>
-          <Button asChild>
-            <Link href="/orders/new">Voltar</Link>
-          </Button>
-        </CardContent>
-      </Card>
+    <div className="bg-card max-w-5xl mx-auto p-6 sm:p-8 rounded-2xl shadow-sm border">
+        <FiscalConfigForm employees={employees} />
     </div>
   );
 }
