@@ -31,6 +31,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 
+const getOrderType = (order: Order): string => {
+  if (order.service === 'Configuração Fiscal') {
+    return 'Configuração Fiscal';
+  }
+  if (order.orderNow === 'Sim') {
+    return 'Pedido Agora';
+  }
+  return 'Cliente Novo';
+};
+
 export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[]; onOrderDeleted: (id: string) => void }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -101,7 +111,7 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                 <TableRow>
                 <TableHead>OS / Cliente</TableHead>
                 <TableHead>Atribuído a</TableHead>
-                <TableHead>Cidade/Estado</TableHead>
+                <TableHead>Tipo de OS</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Prioridade</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
@@ -129,7 +139,7 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                     </TableCell>
                     <TableCell>{order.assignedTo || 'Pendente'}</TableCell>
                     <TableCell>
-                    {order.city} - {order.state}
+                      {getOrderType(order)}
                     </TableCell>
                     <TableCell>
                     <StatusBadge status={order.status} />
