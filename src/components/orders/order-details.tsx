@@ -345,22 +345,24 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                   </div>
                 </DetailSection>
 
-                 <DetailSection title="Checklist de Implantação" icon="checklist">
-                    <div className="bg-secondary/50 p-4 rounded-xl space-y-3">
-                        {(Object.keys(checklist) as Array<keyof ChecklistItems>).map((key) => (
-                            <div key={key} className="flex items-center space-x-2">
-                                <Checkbox
-                                id={key}
-                                checked={checklist[key]}
-                                onCheckedChange={(checked) => handleChecklistChange(key, !!checked)}
-                                />
-                                <Label htmlFor={key} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                {checklistLabels[key]}
-                                </Label>
-                            </div>
-                        ))}
-                    </div>
-                </DetailSection>
+                {order.service !== 'Configuração Fiscal' && (
+                  <DetailSection title="Checklist de Implantação" icon="checklist">
+                      <div className="bg-secondary/50 p-4 rounded-xl space-y-3">
+                          {(Object.keys(checklist) as Array<keyof ChecklistItems>).map((key) => (
+                              <div key={key} className="flex items-center space-x-2">
+                                  <Checkbox
+                                  id={key}
+                                  checked={checklist[key]}
+                                  onCheckedChange={(checked) => handleChecklistChange(key, !!checked)}
+                                  />
+                                  <Label htmlFor={key} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                  {checklistLabels[key]}
+                                  </Label>
+                              </div>
+                          ))}
+                      </div>
+                  </DetailSection>
+                )}
             </div>
             
             <div className="space-y-6">
