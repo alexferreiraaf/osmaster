@@ -128,49 +128,7 @@ export function LoginForm() {
               )}
             </div>
             <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <Label htmlFor="password">Senha</Label>
-                <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
-                  <DialogTrigger asChild>
-                    <button 
-                      type="button" 
-                      className="text-xs text-primary hover:underline font-medium"
-                    >
-                      Esqueci minha senha
-                    </button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Redefinir Senha</DialogTitle>
-                      <DialogDescription>
-                        Insira seu e-mail abaixo. Enviaremos um link para você criar uma nova senha.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="reset-email">E-mail</Label>
-                        <Input
-                          id="reset-email"
-                          placeholder="seu@email.com"
-                          value={resetEmail}
-                          onChange={(e) => setResetEmail(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button 
-                        type="button" 
-                        onClick={handleResetPassword} 
-                        disabled={resetLoading}
-                        className="w-full"
-                      >
-                        {resetLoading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>}
-                        Enviar Link de Redefinição
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
+              <Label htmlFor="password">Senha</Label>
               <Input
                 id="password"
                 type="password"
@@ -182,17 +140,61 @@ export function LoginForm() {
             </div>
           </CardContent>
           <CardFooter>
-            <div className="w-full">
+            <div className="w-full space-y-4">
                 <Button type="submit" className="w-full" disabled={loading}>
                     {loading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>}
                     Entrar
                 </Button>
-                <p className="mt-4 text-center text-sm text-muted-foreground">
-                    Não tem uma conta?{' '}
-                    <Link href="/register" className="text-primary hover:underline">
-                        Cadastre-se
-                    </Link>
-                </p>
+
+                <div className="flex flex-col items-center gap-3">
+                  <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+                    <DialogTrigger asChild>
+                      <button 
+                        type="button" 
+                        className="text-sm text-primary hover:underline font-medium"
+                      >
+                        Esqueci minha senha
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Redefinir Senha</DialogTitle>
+                        <DialogDescription>
+                          Insira seu e-mail abaixo. Enviaremos um link para você criar uma nova senha.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="reset-email">E-mail</Label>
+                          <Input
+                            id="reset-email"
+                            placeholder="seu@email.com"
+                            value={resetEmail}
+                            onChange={(e) => setResetEmail(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button 
+                          type="button" 
+                          onClick={handleResetPassword} 
+                          disabled={resetLoading}
+                          className="w-full"
+                        >
+                          {resetLoading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>}
+                          Enviar Link de Redefinição
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+
+                  <p className="text-center text-sm text-muted-foreground">
+                      Não tem uma conta?{' '}
+                      <Link href="/register" className="text-primary hover:underline">
+                          Cadastre-se
+                      </Link>
+                  </p>
+                </div>
             </div>
           </CardFooter>
         </Card>
