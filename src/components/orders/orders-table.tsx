@@ -46,6 +46,7 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
   const router = useRouter();
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
     setIsDeleting(id);
@@ -64,6 +65,7 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
       });
     } finally {
       setIsDeleting(null);
+      setOpenDropdownId(null);
     }
   };
   
@@ -78,41 +80,41 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
 
   return (
     <>
-        {/* Mobile View - Cards */}
         <div className="md:hidden space-y-3 p-4">
              {orders.map((order) => (
                 <Card 
                   key={order.id} 
                   onClick={() => router.push(`/orders/${order.id}`)} 
-                  className={cn("cursor-pointer", {
-                    'bg-rose-600/10 border-rose-200': order.priority === 'Urgente',
-                    'bg-amber-600/10 border-amber-200': order.priority === 'Alta',
+                  className={cn("cursor-pointer border-l-4 transition-all hover:shadow-md", {
+                    'border-l-rose-500 bg-rose-50/30': order.priority === 'Urgente',
+                    'border-l-amber-500 bg-amber-50/30': order.priority === 'Alta',
+                    'border-l-sky-500': order.priority === 'Média',
+                    'border-l-emerald-500': order.priority === 'Baixa',
                   })}
                 >
                     <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
                     <div className="space-y-1">
                         <CardTitle className="text-sm font-bold text-primary">OS: {order.id}</CardTitle>
-                        <p className="text-base font-semibold">{order.client}</p>
+                        <p className="text-base font-bold truncate max-w-[150px]">{order.client}</p>
                     </div>
                     <div className="flex flex-col items-end gap-2">
                         <StatusBadge status={order.status} />
                         <PriorityBadge priority={order.priority} />
                     </div>
                     </CardHeader>
-                    <CardContent className="text-sm text-muted-foreground">
-                    <p>{order.service}</p>
+                    <CardContent className="text-xs text-muted-foreground">
+                    <p className="font-medium">{order.service}</p>
                     <p>Atribuído a: {order.assignedTo || 'Pendente'}</p>
                     </CardContent>
                 </Card>
             ))}
         </div>
 
-        {/* Desktop View - Table */}
         <div className="hidden md:block">
             <Table>
             <TableHeader>
-                <TableRow>
-                <TableHead>OS / Cliente</TableHead>
+                <TableRow className="hover:bg-transparent">
+                <TableHead className="w-[300px]">OS / Cliente</TableHead>
                 <TableHead>Atribuído a</TableHead>
                 <TableHead>Tipo de OS</TableHead>
                 <TableHead>Status</TableHead>
@@ -124,22 +126,22 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                 {orders.map((order) => (
                 <TableRow
                     key={order.id}
-                    className={cn("transition-colors hover:bg-muted/30", {
-                      'bg-rose-50/50 dark:bg-rose-950/20': order.priority === 'Urgente',
-                      'bg-amber-50/50 dark:bg-amber-950/20': order.priority === 'Alta',
+                    className={cn("transition-colors cursor-default", {
+                      'bg-rose-50/80 hover:bg-rose-100/80 dark:bg-rose-950/20': order.priority === 'Urgente',
+                      'bg-amber-50/80 hover:bg-amber-100/80 dark:bg-amber-950/20': order.priority === 'Alta',
                     })}
                 >
                     <TableCell
                     onClick={() => router.push(`/orders/${order.id}`)}
                     className="cursor-pointer"
                     >
-                    <div className="font-bold text-primary">{order.id}</div>
-                    <div className="text-sm font-medium text-foreground">
+                    <div className="font-black text-primary text-base">{order.id}</div>
+                    <div className="text-sm font-bold text-foreground">
                         {order.client}
                     </div>
                     </TableCell>
-                    <TableCell>{order.assignedTo || 'Pendente'}</TableCell>
-                    <TableCell className="font-medium text-muted-foreground">
+                    <TableCell className="font-medium">{order.assignedTo || 'Pendente'}</TableCell>
+                    <TableCell className="font-bold text-muted-foreground">
                       {getOrderType(order)}
                     </TableCell>
                     <TableCell>
@@ -150,7 +152,10 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                     </TableCell>
                     <TableCell className="text-right">
                          <AlertDialog>
-                            <DropdownMenu modal={false}>
+                            <DropdownMenu 
+                              open={openDropdownId === order.id} 
+                              onOpenChange={(open) => setOpenDropdownId(open ? order.id : null)}
+                            >
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" size="icon">
                                         <MoreVertical size={18} />
@@ -175,16 +180,18 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                             </DropdownMenu>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                                <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    Esta ação não pode ser desfeita. Isso irá deletar
-                                    permanentemente a ordem de serviço {order.id}.
+                                    Deseja realmente deletar a ordem de serviço {order.id}? Esta ação é permanente.
                                 </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                 <AlertDialogAction
-                                    onClick={() => handleDelete(order.id)}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      handleDelete(order.id);
+                                    }}
                                     disabled={isDeleting === order.id}
                                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                 >

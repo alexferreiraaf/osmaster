@@ -31,11 +31,14 @@ export function useOrderNotifications() {
           const newOrder = { id: change.doc.id, ...change.doc.data() } as Order;
           
           if (newOrder.lastUpdatedBy !== user.name) {
-             // Som de notificação
+             // Som de notificação - Alerta sonoro amigável
              const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
-             audio.play().catch(e => console.log('Audio play blocked by browser policy until interaction:', e));
+             audio.play().catch(e => {
+                // Navegadores bloqueiam som sem interação prévia
+                console.log('Audio bloqueado. Clique em qualquer lugar na página para habilitar notificações sonoras.', e);
+             });
 
-             const notification = new Notification('Nova OS Criada!', {
+             const notification = new Notification('Nova OS Master!', {
                 body: `Cliente: ${newOrder.client} | Serviço: ${newOrder.service}`,
                 icon: '/icons/icon-192x192.png',
                 tag: newOrder.id,
