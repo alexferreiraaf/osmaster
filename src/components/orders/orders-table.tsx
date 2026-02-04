@@ -49,7 +49,6 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
-    // Fecha o dropdown imediatamente para evitar travamentos de overlay
     setOpenDropdownId(null);
     setIsDeleting(id);
     
@@ -59,7 +58,6 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
         title: 'Sucesso',
         description: "Ordem de serviço deletada com sucesso.",
       });
-      // Remove da lista local
       onOrderDeleted(id);
     } catch(error) {
       toast({
@@ -129,11 +127,11 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                 {orders.map((order) => (
                 <TableRow
                     key={order.id}
-                    className={cn("transition-colors group", {
+                    className={cn("transition-colors group border-b", {
                       'bg-rose-100 hover:bg-rose-200 dark:bg-rose-900/30': order.priority === 'Urgente',
                       'bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/30': order.priority === 'Alta',
-                      'bg-sky-100 hover:bg-sky-200 dark:bg-sky-900/30': order.priority === 'Média',
-                      'bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/30': order.priority === 'Baixa',
+                      'bg-sky-50 hover:bg-sky-100 dark:bg-sky-900/20': order.priority === 'Média',
+                      'bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20': order.priority === 'Baixa',
                     })}
                 >
                     <TableCell

@@ -24,8 +24,6 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import type { Order, Employee, ChecklistItems, OrderStatus } from '@/lib/types';
 import { updateOrderStatus, updateOrderChecklist, updateOrderDescription } from '@/lib/data';
@@ -38,7 +36,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useAuth } from '../auth/auth-provider';
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import jsPDF from 'jspdf';
+import jsPDF from 'jsPDF';
 import html2canvas from 'html2canvas';
 import PriorityBadge from '../shared/priority-badge';
 
@@ -202,11 +200,11 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
     try {
       await updateOrderStatus(order.id, status, user.name);
       toast({ title: 'Status Atualizado', description: `Ordem agora está "${status}".`});
-      router.refresh();
+      router.push('/orders');
     } catch(error) {
         toast({ variant: 'destructive', title: 'Erro', description: (error as Error).message });
+        setIsUpdating(false);
     }
-    setIsUpdating(false);
   };
   
   return (
@@ -227,7 +225,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
         </div>
       </div>
 
-      <Card id="printable-os" className="p-4 sm:p-10 shadow-xl border-t-8 border-t-primary">
+      <Card id="printable-os" className="p-4 sm:p-10 shadow-xl border-t-8 border-t-primary rounded-xl">
         <header className="flex flex-col sm:flex-row justify-between items-start border-b pb-8 mb-8 gap-4">
           <div>
             <h1 className="text-4xl font-black text-foreground tracking-tighter">ORDEM #{order.id}</h1>
@@ -365,7 +363,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
             
             <div className="space-y-10">
                  <DetailSection title="Configurações de Módulos" icon="settings">
-                      <div className="grid grid-3 gap-3">
+                      <div className="grid grid-cols-3 gap-3">
                         <InfoBadge label="Pedido Agora" value={order.orderNow} />
                         <InfoBadge label="Mobile" value={order.mobile} />
                         <InfoBadge label="iFood" value={order.ifoodIntegration} />

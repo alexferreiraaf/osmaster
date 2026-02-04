@@ -13,9 +13,7 @@ export function useOrderNotifications() {
   useEffect(() => {
     if (typeof window !== 'undefined' && 'Notification' in window) {
       if (Notification.permission === 'default') {
-        Notification.requestPermission().then(permission => {
-          console.log('Permissão de notificação:', permission);
-        });
+        Notification.requestPermission();
       }
     }
   }, []);
@@ -25,7 +23,6 @@ export function useOrderNotifications() {
       return;
     }
 
-    // Ouvinte em tempo real para ordens criadas após o carregamento da página
     const q = query(
       collection(db, 'orders'), 
       where('date', '>', initialLoadTime.current)
@@ -36,28 +33,16 @@ export function useOrderNotifications() {
         if (change.type === 'added') {
           const newOrder = { id: change.doc.id, ...change.doc.data() } as Order;
           
-          // Só notifica se foi outra pessoa que criou
           if (newOrder.lastUpdatedBy !== user.name) {
-            console.log('Nova OS detectada:', newOrder.id);
-
-            // Alerta sonoro
+            // Som de Alerta
             const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
-            audio.play().catch(e => {
-              console.log('Áudio bloqueado pelo navegador. Interaja com a página primeiro.', e);
-            });
+            audio.play().catch(e => console.log('Audio playback failed', e));
 
-            // Notificação de sistema
+            // Notificação Visual
             if (Notification.permission === 'granted') {
-              const notification = new Notification('Nova OS Master!', {
-                body: `Cliente: ${newOrder.client} | Serviço: ${newOrder.service}`,
-                icon: '/icons/icon-192x192.png',
-                tag: newOrder.id,
+              new Notification('Nova OS Recebida!', {
+                body: `Cliente: ${newOrder.client}\nServiço: ${newOrder.service}`,
               });
-
-              notification.onclick = () => {
-                window.focus();
-                window.location.href = `/orders/${newOrder.id}`;
-              };
             }
           }
         }
