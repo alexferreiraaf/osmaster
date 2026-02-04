@@ -36,7 +36,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useAuth } from '../auth/auth-provider';
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import jsPDF from 'jsPDF';
+import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import PriorityBadge from '../shared/priority-badge';
 
@@ -210,7 +210,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center no-print">
-        <Button asChild variant="link" className="px-0 font-bold">
+        <Button asChild variant="link" className="px-0 font-bold text-primary hover:text-primary/80">
           <Link href="/orders">← Voltar para lista</Link>
         </Button>
         <div className="flex gap-2">
@@ -404,7 +404,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
                                     onClick={handleSaveDescription} 
                                     disabled={isSavingDescription || description === order.description} 
                                     size="sm"
-                                    className="font-bold shadow-lg"
+                                    className="font-bold shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
                                 >
                                     {isSavingDescription ? <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div> : 'Salvar Observações'}
                                 </Button>

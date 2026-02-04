@@ -34,9 +34,10 @@ export function useOrderNotifications() {
           const newOrder = { id: change.doc.id, ...change.doc.data() } as Order;
           
           if (newOrder.lastUpdatedBy !== user.name) {
+            console.log('Nova OS detectada para notificação sonora');
             // Som de Alerta
             const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
-            audio.play().catch(e => console.log('Audio playback failed', e));
+            audio.play().catch(e => console.log('Audio playback failed (browser restriction)', e));
 
             // Notificação Visual
             if (Notification.permission === 'granted') {
