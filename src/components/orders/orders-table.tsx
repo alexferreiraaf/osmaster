@@ -79,7 +79,7 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
   return (
     <>
         {/* Mobile View - Cards */}
-        <div className="md:hidden space-y-3">
+        <div className="md:hidden space-y-3 p-4">
              {orders.map((order) => (
                 <Card 
                   key={order.id} 
@@ -157,16 +157,16 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onSelect={() => router.push(`/orders/${order.id}`)}>
+                                    <DropdownMenuItem onClick={() => router.push(`/orders/${order.id}`)}>
                                         <FileText className="mr-2 h-4 w-4" />
                                         Ver Detalhes
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => router.push(`/orders/${order.id}/edit`)}>
+                                    <DropdownMenuItem onClick={() => router.push(`/orders/${order.id}/edit`)}>
                                         <Pencil className="mr-2 h-4 w-4" />
                                         Editar
                                     </DropdownMenuItem>
                                     <AlertDialogTrigger asChild>
-                                        <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={(e) => e.preventDefault()}>
+                                        <DropdownMenuItem className="text-destructive focus:text-destructive">
                                             <Trash2 className="mr-2 h-4 w-4" />
                                             Deletar
                                         </DropdownMenuItem>
