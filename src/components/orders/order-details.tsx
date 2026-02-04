@@ -40,6 +40,7 @@ import { useAuth } from '../auth/auth-provider';
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import PriorityBadge from '../shared/priority-badge';
 
 function InfoBadge({ label, value }: { label: string; value: 'Sim' | 'Não' }) {
   const isYes = value === 'Sim';
@@ -364,7 +365,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
             
             <div className="space-y-10">
                  <DetailSection title="Configurações de Módulos" icon="settings">
-                      <div className="grid grid-cols-3 gap-3">
+                      <div className="grid grid-3 gap-3">
                         <InfoBadge label="Pedido Agora" value={order.orderNow} />
                         <InfoBadge label="Mobile" value={order.mobile} />
                         <InfoBadge label="iFood" value={order.ifoodIntegration} />
