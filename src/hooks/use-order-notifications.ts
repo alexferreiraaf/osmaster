@@ -31,6 +31,10 @@ export function useOrderNotifications() {
           const newOrder = { id: change.doc.id, ...change.doc.data() } as Order;
           
           if (newOrder.lastUpdatedBy !== user.name) {
+             // Som de notificação
+             const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+             audio.play().catch(e => console.log('Audio play blocked by browser policy until interaction:', e));
+
              const notification = new Notification('Nova OS Criada!', {
                 body: `Cliente: ${newOrder.client} | Serviço: ${newOrder.service}`,
                 icon: '/icons/icon-192x192.png',

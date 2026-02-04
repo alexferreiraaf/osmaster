@@ -150,7 +150,7 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                     </TableCell>
                     <TableCell className="text-right">
                          <AlertDialog>
-                            <DropdownMenu>
+                            <DropdownMenu modal={false}>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" size="icon">
                                         <MoreVertical size={18} />
