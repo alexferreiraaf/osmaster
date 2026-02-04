@@ -219,7 +219,6 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
 
   const dllMask = (value: string) => {
     if (!value) return '';
-    // Allow only hex characters and limit to 128
     return value.replace(/[^0-9a-fA-F]/g, '').slice(0, 128);
   };
 
@@ -432,3 +431,4 @@ export function NewOrderForm({ employees }: { employees: Employee[] }) {
       </div>
     </form>
   );
+}

@@ -166,9 +166,9 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
     try {
       await updateOrderChecklist(order.id, updatedChecklist, user);
       toast({ title: 'Checklist Atualizado' });
-      router.refresh();
     } catch(error) {
         toast({ variant: 'destructive', title: 'Erro', description: (error as Error).message });
+        setChecklist(checklist); // Revert
     }
   };
 
@@ -178,7 +178,6 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
     try {
       await updateOrderDescription(order.id, description, user);
       toast({ title: 'Observações Salvas' });
-      router.refresh();
     } catch(error) {
       toast({ variant: 'destructive', title: 'Erro', description: (error as Error).message });
     }
@@ -202,7 +201,7 @@ export default function OrderDetails({ order, employees }: { order: Order, emplo
     try {
       await updateOrderStatus(order.id, status, user.name);
       toast({ title: 'Status Atualizado', description: `Ordem agora está "${status}".`});
-      router.push('/dashboard');
+      router.refresh();
     } catch(error) {
         toast({ variant: 'destructive', title: 'Erro', description: (error as Error).message });
     }

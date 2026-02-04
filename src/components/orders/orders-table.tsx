@@ -1,8 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { FileText, MoreVertical, Trash2, Pencil } from 'lucide-react';
-import type { Order, Priority } from '@/lib/types';
+import type { Order } from '@/lib/types';
 import {
   Table,
   TableBody,
@@ -27,7 +28,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { deleteOrder } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 
@@ -44,13 +45,15 @@ const getOrderType = (order: Order): string => {
 export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[]; onOrderDeleted: (id: string) => void }) {
   const router = useRouter();
   const { toast } = useToast();
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
+    setIsDeleting(id);
     try {
       await deleteOrder(id);
       toast({
         title: 'Sucesso',
-        description: "Ordem de serviço deletada.",
+        description: "Ordem de serviço deletada com sucesso.",
       });
       onOrderDeleted(id);
     } catch(error) {
@@ -59,6 +62,8 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
         title: 'Erro',
         description: (error as Error).message || 'Não foi possível deletar a ordem de serviço.',
       });
+    } finally {
+      setIsDeleting(null);
     }
   };
   
@@ -80,10 +85,8 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                   key={order.id} 
                   onClick={() => router.push(`/orders/${order.id}`)} 
                   className={cn("cursor-pointer", {
-                    'bg-rose-600/20 dark:bg-rose-500/20': order.priority === 'Urgente',
-                    'bg-amber-600/20 dark:bg-amber-500/20': order.priority === 'Alta',
-                    'bg-sky-600/20 dark:bg-sky-500/20': order.priority === 'Média',
-                    'bg-emerald-600/20 dark:bg-emerald-500/20': order.priority === 'Baixa',
+                    'bg-rose-600/10 border-rose-200': order.priority === 'Urgente',
+                    'bg-amber-600/10 border-amber-200': order.priority === 'Alta',
                   })}
                 >
                     <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
@@ -121,11 +124,9 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                 {orders.map((order) => (
                 <TableRow
                     key={order.id}
-                    className={cn("transition-colors", {
-                      'bg-rose-600/20 hover:bg-rose-600/30 dark:bg-rose-500/20 dark:hover:bg-rose-500/30': order.priority === 'Urgente',
-                      'bg-amber-600/20 hover:bg-amber-600/30 dark:bg-amber-500/20 dark:hover:bg-amber-500/30': order.priority === 'Alta',
-                      'bg-sky-600/20 hover:bg-sky-600/30 dark:bg-sky-500/20 dark:hover:bg-sky-500/30': order.priority === 'Média',
-                      'bg-emerald-600/20 hover:bg-emerald-600/30 dark:bg-emerald-500/20 dark:hover:bg-emerald-500/30': order.priority === 'Baixa',
+                    className={cn("transition-colors hover:bg-muted/30", {
+                      'bg-rose-50/50 dark:bg-rose-950/20': order.priority === 'Urgente',
+                      'bg-amber-50/50 dark:bg-amber-950/20': order.priority === 'Alta',
                     })}
                 >
                     <TableCell
@@ -138,11 +139,11 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                     </div>
                     </TableCell>
                     <TableCell>{order.assignedTo || 'Pendente'}</TableCell>
-                    <TableCell>
+                    <TableCell className="font-medium text-muted-foreground">
                       {getOrderType(order)}
                     </TableCell>
                     <TableCell>
-                    <StatusBadge status={order.status} />
+                      <StatusBadge status={order.status} />
                     </TableCell>
                     <TableCell>
                       <PriorityBadge priority={order.priority} />
@@ -184,9 +185,10 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={() => handleDelete(order.id)}
+                                    disabled={isDeleting === order.id}
                                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                 >
-                                    Deletar
+                                    {isDeleting === order.id ? 'Deletando...' : 'Deletar'}
                                 </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
