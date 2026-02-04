@@ -49,13 +49,17 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
+    // Fecha o dropdown imediatamente para evitar travamentos de overlay
+    setOpenDropdownId(null);
     setIsDeleting(id);
+    
     try {
       await deleteOrder(id);
       toast({
         title: 'Sucesso',
         description: "Ordem de serviço deletada com sucesso.",
       });
+      // Remove da lista local
       onOrderDeleted(id);
     } catch(error) {
       toast({
@@ -65,7 +69,6 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
       });
     } finally {
       setIsDeleting(null);
-      setOpenDropdownId(null);
     }
   };
   
@@ -86,10 +89,10 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                   key={order.id} 
                   onClick={() => router.push(`/orders/${order.id}`)} 
                   className={cn("cursor-pointer border-l-4 transition-all hover:shadow-md", {
-                    'border-l-rose-500 bg-rose-50/50': order.priority === 'Urgente',
-                    'border-l-amber-500 bg-amber-50/50': order.priority === 'Alta',
-                    'border-l-sky-500 bg-sky-50/50': order.priority === 'Média',
-                    'border-l-emerald-500 bg-emerald-50/50': order.priority === 'Baixa',
+                    'border-l-rose-500 bg-rose-50': order.priority === 'Urgente',
+                    'border-l-amber-500 bg-amber-50': order.priority === 'Alta',
+                    'border-l-sky-500 bg-sky-50': order.priority === 'Média',
+                    'border-l-emerald-500 bg-emerald-50': order.priority === 'Baixa',
                   })}
                 >
                     <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
@@ -126,11 +129,11 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                 {orders.map((order) => (
                 <TableRow
                     key={order.id}
-                    className={cn("transition-colors cursor-default", {
-                      'bg-rose-100/60 hover:bg-rose-200/60 dark:bg-rose-900/40': order.priority === 'Urgente',
-                      'bg-amber-100/60 hover:bg-amber-200/60 dark:bg-amber-900/40': order.priority === 'Alta',
-                      'bg-sky-100/60 hover:bg-sky-200/60 dark:bg-sky-900/40': order.priority === 'Média',
-                      'bg-emerald-100/60 hover:bg-emerald-200/60 dark:bg-emerald-900/40': order.priority === 'Baixa',
+                    className={cn("transition-colors group", {
+                      'bg-rose-100 hover:bg-rose-200 dark:bg-rose-900/30': order.priority === 'Urgente',
+                      'bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/30': order.priority === 'Alta',
+                      'bg-sky-100 hover:bg-sky-200 dark:bg-sky-900/30': order.priority === 'Média',
+                      'bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/30': order.priority === 'Baixa',
                     })}
                 >
                     <TableCell
@@ -159,7 +162,7 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                               onOpenChange={(open) => setOpenDropdownId(open ? order.id : null)}
                             >
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon">
+                                    <Button variant="ghost" size="icon" className="hover:bg-background/50">
                                         <MoreVertical size={18} />
                                     </Button>
                                 </DropdownMenuTrigger>
@@ -188,7 +191,7 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                                 </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogCancel onClick={() => setOpenDropdownId(null)}>Cancelar</AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={(e) => {
                                       e.preventDefault();

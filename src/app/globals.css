@@ -57,6 +57,7 @@
   }
 }
 
+/* Garante que o PDF gerado seja fiel ao estilo visual */
 @media print {
   .no-print {
     display: none !important;
