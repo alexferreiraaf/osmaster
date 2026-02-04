@@ -127,10 +127,10 @@ export default function OrdersTable({ orders, onOrderDeleted }: { orders: Order[
                 <TableRow
                     key={order.id}
                     className={cn("transition-colors cursor-default", {
-                      'bg-rose-100/60 hover:bg-rose-200/60 dark:bg-rose-950/40': order.priority === 'Urgente',
-                      'bg-amber-100/60 hover:bg-amber-200/60 dark:bg-amber-950/40': order.priority === 'Alta',
-                      'bg-sky-100/60 hover:bg-sky-200/60 dark:bg-sky-950/40': order.priority === 'Média',
-                      'bg-emerald-100/60 hover:bg-emerald-200/60 dark:bg-emerald-950/40': order.priority === 'Baixa',
+                      'bg-rose-100/60 hover:bg-rose-200/60 dark:bg-rose-900/40': order.priority === 'Urgente',
+                      'bg-amber-100/60 hover:bg-amber-200/60 dark:bg-amber-900/40': order.priority === 'Alta',
+                      'bg-sky-100/60 hover:bg-sky-200/60 dark:bg-sky-900/40': order.priority === 'Média',
+                      'bg-emerald-100/60 hover:bg-emerald-200/60 dark:bg-emerald-900/40': order.priority === 'Baixa',
                     })}
                 >
                     <TableCell
