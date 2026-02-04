@@ -19,6 +19,15 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { ClipboardList } from 'lucide-react';
 import Link from 'next/link';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 
 const FormSchema = z.object({
@@ -29,9 +38,13 @@ const FormSchema = z.object({
 type FormValues = z.infer<typeof FormSchema>;
 
 export function LoginForm() {
-  const { login } = useAuth();
+  const { login, resetPassword } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -50,6 +63,36 @@ export function LoginForm() {
         description: result.message,
       });
       setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!resetEmail || !resetEmail.includes('@')) {
+      toast({
+        variant: 'destructive',
+        title: 'E-mail inválido',
+        description: 'Por favor, insira um e-mail válido para redefinir a senha.',
+      });
+      return;
+    }
+
+    setResetLoading(true);
+    const result = await resetPassword(resetEmail);
+    setResetLoading(false);
+
+    if (result.success) {
+      toast({
+        title: 'E-mail enviado!',
+        description: 'Verifique sua caixa de entrada para redefinir sua senha.',
+      });
+      setIsResetDialogOpen(false);
+      setResetEmail('');
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: result.message,
+      });
     }
   };
 
@@ -85,7 +128,49 @@ export function LoginForm() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <div className="flex justify-between items-center">
+                <Label htmlFor="password">Senha</Label>
+                <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+                  <DialogTrigger asChild>
+                    <button 
+                      type="button" 
+                      className="text-xs text-primary hover:underline font-medium"
+                    >
+                      Esqueci minha senha
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Redefinir Senha</DialogTitle>
+                      <DialogDescription>
+                        Insira seu e-mail abaixo. Enviaremos um link para você criar uma nova senha.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="reset-email">E-mail</Label>
+                        <Input
+                          id="reset-email"
+                          placeholder="seu@email.com"
+                          value={resetEmail}
+                          onChange={(e) => setResetEmail(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button 
+                        type="button" 
+                        onClick={handleResetPassword} 
+                        disabled={resetLoading}
+                        className="w-full"
+                      >
+                        {resetLoading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>}
+                        Enviar Link de Redefinição
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
               <Input
                 id="password"
                 type="password"

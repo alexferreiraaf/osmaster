@@ -11,6 +11,7 @@ import {
     createUserWithEmailAndPassword,
     signOut,
     updateProfile,
+    sendPasswordResetEmail,
     type User as FirebaseUser
 } from 'firebase/auth';
 
@@ -19,6 +20,7 @@ type AuthContextType = {
   login: (credentials: any) => Promise<any>;
   register: (credentials: any) => Promise<any>;
   logout: () => void;
+  resetPassword: (email: string) => Promise<any>;
   loading: boolean;
 };
 
@@ -103,7 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 message = 'Chave de API inválida. Verifique as variáveis de ambiente do Firebase no seu arquivo .env.';
                 break;
             default:
-                message = error.message; // Use a mensagem de erro do Firebase se for outra coisa
+                message = error.message;
                 break;
         }
         return { success: false, message };
@@ -116,6 +118,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/');
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      return { success: true };
+    } catch (error: any) {
+      let message = 'Erro ao enviar e-mail de redefinição.';
+      if (error.code === 'auth/user-not-found') {
+        message = 'E-mail não cadastrado no sistema.';
+      } else if (error.code === 'auth/invalid-email') {
+        message = 'Formato de e-mail inválido.';
+      }
+      return { success: false, message };
+    }
+  };
+
   const publicRoutes = ['/', '/login', '/register'];
   if (loading || (!user && !publicRoutes.includes(pathname))) {
     return (
@@ -126,7 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, resetPassword, loading }}>
       {children}
     </AuthContext.Provider>
   );
